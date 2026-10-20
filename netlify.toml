@@ -1,6 +1,7 @@
 [build]
   command = "echo skip"
-  publish = "."
+  publish = "public"
 
 [functions]
   directory = "netlify/functions"
+  
