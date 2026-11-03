@@ -24,12 +24,8 @@ export default async (req) => {
     });
   }
 
-  // رفع: بكلمة مرور فقط (نفس كلمة مرور التقرير الأسبوعي)
+  // رفع: بدون كلمة مرور
   if (req.method === "POST") {
-    const pw = process.env.UPLOAD_PASSWORD;
-    if (!pw) return json({ error: "UPLOAD_PASSWORD غير مضبوط في Netlify" }, 500);
-    if (req.headers.get("x-upload-password") !== pw) return json({ error: "كلمة المرور غير صحيحة" }, 401);
-
     const buf = await req.arrayBuffer();
     if (buf.byteLength < 1000 || buf.byteLength > 15 * 1024 * 1024) return json({ error: "حجم الملف غير مناسب" }, 400);
     const head = new Uint8Array(buf, 0, 2);
