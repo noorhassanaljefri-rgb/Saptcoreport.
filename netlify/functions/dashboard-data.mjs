@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 
-export const config = { path: "/api/dashboard-data" };
+export const config = { path: "/api/monthly-data" };
 
 const KEY = "latest.xlsx";
 const noCache = { "Cache-Control": "no-store" };
@@ -8,7 +8,7 @@ const json = (obj, status) =>
   new Response(JSON.stringify(obj), { status, headers: { "Content-Type": "application/json", ...noCache } });
 
 export default async (req) => {
-  const store = getStore({ name: "dashboard", consistency: "strong" });
+  const store = getStore({ name: "dashboard-monthly", consistency: "strong" });
 
   // قراءة: أي شخص يفتح الرابط
   if (req.method === "GET") {
@@ -24,7 +24,7 @@ export default async (req) => {
     });
   }
 
-  // رفع: بكلمة مرور فقط
+  // رفع: بكلمة مرور فقط (نفس كلمة مرور التقرير الأسبوعي)
   if (req.method === "POST") {
     const pw = process.env.UPLOAD_PASSWORD;
     if (!pw) return json({ error: "UPLOAD_PASSWORD غير مضبوط في Netlify" }, 500);
