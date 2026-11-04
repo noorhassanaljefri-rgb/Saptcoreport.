@@ -1194,6 +1194,10 @@ const yearDividerCode = [
   '    if (prevYear && currYear && prevYear !== currYear) {',
   '      const dividerX = (X(i - 1) + X(i)) / 2;',
   '      out += `<line x1="${dividerX}" x2="${dividerX}" y1="${T}" y2="${T + ph}" stroke="#2874B9" stroke-width="2.5" stroke-dasharray="8 6" opacity=".95"/>`;',
+  
+'      out += `<text x="${(X(0) + dividerX) / 2}" y="${T - 10}" text-anchor="middle" fill="#2874B9" font-size="14" font-weight="700">${prevYear}</text>`;',
+'      out += `<text x="${(dividerX + X(MONTHS.length - 1)) / 2}" y="${T - 10}" text-anchor="middle" fill="#2874B9" font-size="14" font-weight="700">${currYear}</text>`;',
+
   '    }',
   '  }'
 ].join('\n');
