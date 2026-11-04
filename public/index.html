@@ -1181,7 +1181,28 @@ function monthlyWin(){ const f=document.getElementById('monthlyFrame'); return f
 function setMonthlyActive(tab){ document.querySelectorAll('#navMonthly .nav-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab)); }
 function loadMonthly(){
   if(_monthlyLoaded) return; _monthlyLoaded = true;
-  const html = new TextDecoder('utf-8').decode(Uint8Array.from(atob(MONTHLY_B64), c=>c.charCodeAt(0)));
+
+let html = new TextDecoder('utf-8').decode(
+  Uint8Array.from(atob(MONTHLY_B64), c => c.charCodeAt(0))
+);
+
+// Add a vertical divider between 2025 and 2026
+const yearDividerCode = [
+  '  for (let i = 1; i < MONTHS.length; i++) {',
+  '    const prevYear = MONTHS[i - 1].name.match(/20\\d{2}/)?.[0];',
+  '    const currYear = MONTHS[i].name.match(/20\\d{2}/)?.[0];',
+  '    if (prevYear && currYear && prevYear !== currYear) {',
+  '      const dividerX = (X(i - 1) + X(i)) / 2;',
+  '      out += `<line x1="${dividerX}" x2="${dividerX}" y1="${T}" y2="${T + ph}" stroke="#2874B9" stroke-width="2.5" stroke-dasharray="8 6" opacity=".95"/>`;',
+  '    }',
+  '  }'
+].join('\n');
+
+html = html.replace(
+  '  const every = w < 640 ? 3 : w < 1000 ? 2 : 1;',
+  yearDividerCode + '\n  const every = w < 640 ? 3 : w < 1000 ? 2 : 1;'
+);
+
   const f = document.getElementById('monthlyFrame');
   f.addEventListener('load', ()=>{
     try{
