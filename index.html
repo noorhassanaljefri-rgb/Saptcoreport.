@@ -1419,7 +1419,12 @@ async function restoreLink(){
     const f=await h.getFile().catch(()=>null);
     const perm=await h.queryPermission({mode:'read'});
     if(perm==='granted' && f){ LINK.lastMod=f.lastModified; startSync(); }   // لا تغيّر منذ آخر مزامنة نعرفه، وأي تغيير لاحق يُلتقط
-    else { linkUI('need'); }
+    else {
+      linkUI('need');
+      // المتصفح يحتاج نقرة من المستخدم لإعادة الإذن — أي نقرة في الصفحة تكفي (مرة واحدة)
+      const once = (ev)=>{ if(ev.target.closest && ev.target.closest('#linkBtn')) return; document.removeEventListener('click', once, true); resumeLink(); };
+      document.addEventListener('click', once, true);
+    }
   }catch(e){ console.warn('restoreLink',e); }
 }
 async function resumeLink(){
