@@ -304,6 +304,7 @@
     <div class="sidebar-footer" id="sideFootWeekly">
       <div><b>الفترة المرجعية:</b> <span id="bPeriod">6 – 12 أكتوبر 2026</span></div>
       <div><b>دورية التحديث:</b> أسبوعية</div>
+      <div><b>آخر تحديث للجميع:</b> <span id="bSharedAt">…</span></div>
     </div>
   </aside>
 
@@ -1317,17 +1318,31 @@ async function applyEmbedded(){
     try{ applyWorkbook(await readXlsx(cache.buf)); window.__lastXlsx=cache.buf; }catch(e){ console.error('cache2',e); }
   }
 }
+/* سطر الحالة في القائمة الجانبية: متى وصل آخر تحديث للجميع، أو أن السيرفر لا يستقبل */
+function setSharedStatus(v, kind){
+  const el=document.getElementById('bSharedAt'); if(!el) return;
+  if(kind){ el.textContent=v; el.style.color = kind==='bad' ? '#F08A8B' : '#E5C27A'; return; }
+  const d=new Date(v); if(isNaN(d)){ el.textContent='—'; return; }
+  const same=d.toDateString()===new Date().toDateString();
+  el.textContent=(same?'اليوم ':d.toLocaleDateString('ar-SA-u-nu-latn-ca-gregory',{day:'numeric',month:'long'})+' ')+d.toLocaleTimeString('ar-SA-u-nu-latn',{hour:'2-digit',minute:'2-digit'});
+  el.style.color='';
+}
 /* آخر ملف مرفوع على الخادم — يظهر لكل من يفتح اللوحة */
 let _sharedStamp = null;
 async function applyShared(){
   try{
     if(typeof DecompressionStream==='undefined') return false;
-    if(window.__pendingUpload) return false;
     const m=await fetch('/api/dashboard-data?meta=1&_='+Date.now(),{cache:'no-store'});
-    if(!m.ok) return false;
+    if(!m.ok){
+      const isJson=(m.headers.get('content-type')||'').includes('json');
+      setSharedStatus(isJson ? 'لم يُرفع أي ملف للسيرفر بعد' : '⚠ السيرفر لا يستقبل التحديثات', isJson?'warn':'bad');
+      return false;
+    }
+    if(window.__pendingUpload) return false;
     let stamp, buf;
     if((m.headers.get('content-type')||'').includes('json')){        // الدالة الجديدة: نسأل عن وقت آخر تحديث فقط
       stamp=(await m.json()).updatedAt||'';
+      setSharedStatus(stamp);
       if(_sharedStamp!==null && stamp===_sharedStamp) return false;
       const r=await fetch('/api/dashboard-data?_='+Date.now(),{cache:'no-store'}); if(!r.ok) return false;
       buf=await r.arrayBuffer();
@@ -1363,7 +1378,7 @@ async function pushSilently(name, buf){
   const send=()=>fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
   let r=await send();
   if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await send(); }
-  if(r.ok){ try{ const j=await r.clone().json(); if(j.updatedAt) _sharedStamp=j.updatedAt; }catch(_){} }   // لا نعيد تنزيل نفس الملف الذي رفعناه
+  if(r.ok){ try{ const j=await r.clone().json(); if(j.updatedAt){ _sharedStamp=j.updatedAt; setSharedStatus(j.updatedAt); } }catch(_){} }   // لا نعيد تنزيل نفس الملف الذي رفعناه
   if(!r.ok){ let m=''; try{ m=(await r.json()).error; }catch(_){} throw new Error(m||('فشل الرفع ('+r.status+')')); }
 }
 async function retryPending(){
