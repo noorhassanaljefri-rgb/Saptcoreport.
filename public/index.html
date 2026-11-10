@@ -862,10 +862,15 @@ function applyWorkbook(book){
 
   run('المستخلصات', ()=>{
     const a = S.abs; if(!a) return;   // ملف قديم بدون الورقة: تبقى البيانات السابقة
-    const ok = v => { const t=String(v==null?'':v).trim(); return t==='ü' || t==='✓' || t==='✔' || t==='√'; };
-    const out = [];
+    // علامة الإنجاز: ü (Wingdings) أو ✓ ✔ √ ☑ أو «تم» أو 1 أو TRUE
+    const ok = v => { if(v===true || v===1) return true; const t=String(v==null?'':v).trim(); return ['ü','✓','✔','√','☑','✅','تم','نعم'].includes(t); };
+    const out = []; let blanks = 0;
     for(let r=2;r<200;r++){
-      const month = a.str('A'+r); if(!month) break;
+      let month = a.get('A'+r);
+      if(typeof month==='number' && month>30000){ const d=serialToDate(month); month = `${AR_MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`; }   // الشهر مكتوب كتاريخ
+      month = String(month==null?'':month).trim();
+      if(!month){ if(++blanks>2) break; continue; }   // يتحمّل صفًا فارغًا بين الأشهر
+      blanks = 0;
       const no = a.num('B'+r), amt = a.num('C'+r);
       const flags = ['D','E','F','G','H','I'].map(c=>ok(a.get(c+r))?1:0);
       const note = a.str('I'+r), noteTxt = (note && !ok(note) && note!=='-') ? note : '';
@@ -1336,14 +1341,14 @@ async function applyShared(){
     _sharedStamp=stamp; cacheLocal(buf,false); return true;
   }catch(e){ console.error('shared',e); return false; }
 }
-/* تحديث تلقائي: كل دقيقة نتحقق إن كان هناك ملف أحدث على الخادم ونعيد رسم اللوحة */
+/* تحديث تلقائي: كل 5 ثوانٍ نتحقق إن كان هناك ملف أحدث على الخادم ونعيد رسم اللوحة */
 setInterval(async()=>{
   if(document.hidden) return;
   if(await applyShared()){
     renderAllData();
     const a=document.querySelector('#navList .nav-item.active'); buildChartsForTab(a?a.dataset.tab:'overview');
   }
-},15000);
+},5000);
 
 /* ============ تخزين محلي (IndexedDB) — يمنع الرجوع للقديم عند الرفرش ============ */
 function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open('saptco-dash',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
@@ -1353,11 +1358,12 @@ async function kvSet(k,v){ try{ const d=await idb(); await new Promise((res,rej)
 async function cacheLocal(buf, pending){ await kvSet('lastXlsx',{buf, ts:Date.now(), pending:!!pending}); window.__pendingUpload=!!pending; }
 async function markUploaded(){ const c=await kvGet('lastXlsx'); if(c){ c.pending=false; await kvSet('lastXlsx',c); } window.__pendingUpload=false; }
 async function pushSilently(name, buf){
+  // الرفع بدون كلمة مرور (الدالة netlify/functions/weekly-data.mjs)؛ تُطلب فقط لو أعاد الخادم 401
   let pw=''; try{ pw=localStorage.getItem('uploadPw')||''; }catch(_){}
-  if(!pw && !window.__pwAsked){ window.__pwAsked=true; pw=getUploadPassword(true); }
-  if(!pw) throw new Error('لا توجد كلمة مرور');
-  let r=await fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
-  if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf}); }
+  const send=()=>fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
+  let r=await send();
+  if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await send(); }
+  if(r.ok){ try{ const j=await r.clone().json(); if(j.updatedAt) _sharedStamp=j.updatedAt; }catch(_){} }   // لا نعيد تنزيل نفس الملف الذي رفعناه
   if(!r.ok){ let m=''; try{ m=(await r.json()).error; }catch(_){} throw new Error(m||('فشل الرفع ('+r.status+')')); }
 }
 async function retryPending(){
@@ -1387,8 +1393,10 @@ async function syncTick(){
     const res=await applyBuffer(buf, f.name);
     LINK.lastMod=f.lastModified; LINK.pendingMod=0;
     await cacheLocal(buf,true);
-    try{ await pushSilently(f.name,buf); await markUploaded(); }
-    catch(e){ console.warn('رفع للجميع فشل — سيُعاد تلقائيًا:',e); }   // بدون أي رسالة للمستخدم
+    const tm = new Date().toLocaleTimeString('ar-SA-u-nu-latn',{hour:'2-digit',minute:'2-digit'});
+    const warn = res.failed.length ? `<br><span class="warn">تعذّرت قراءة: ${res.failed.join('، ')}</span>` : '';
+    try{ await pushSilently(f.name,buf); await markUploaded(); showUpdMsg(`✔ تم التحديث من الإكسل (${tm}) — ويظهر للجميع${warn}`, warn?'warn':'ok', 5000); }
+    catch(e){ console.warn('رفع للجميع فشل — سيُعاد تلقائيًا:',e); showUpdMsg(`✔ تم التحديث عندك من الإكسل (${tm}) — سيُرسل للجميع عند توفر الاتصال${warn}`, 'warn', 6000); }
   }catch(e){ console.warn('sync',e); }   // ملف مقفل أثناء الحفظ — نعيد المحاولة في الدورة التالية
   finally{ LINK.busy=false; }
 }
