@@ -1400,7 +1400,7 @@ async function applyBuffer(buf, label){
 async function syncTick(){
   if(LINK.busy||!LINK.handle) return;
   try{
-    const f=await LINK.handle.getFile();
+    const f=await LINK.handle.getFile(); LINK.fails=0;
     if(f.lastModified===LINK.lastMod){ LINK.pendingMod=0; return; }
     if(LINK.pendingMod!==f.lastModified){ LINK.pendingMod=f.lastModified; return; }   // ننتظر استقرار الملف دورة واحدة (انتهاء الحفظ)
     LINK.busy=true;
@@ -1412,7 +1412,7 @@ async function syncTick(){
     const warn = res.failed.length ? `<br><span class="warn">تعذّرت قراءة: ${res.failed.join('، ')}</span>` : '';
     try{ await pushSilently(f.name,buf); await markUploaded(); showUpdMsg(`✔ تم التحديث من الإكسل (${tm}) — ويظهر للجميع${warn}`, warn?'warn':'ok', 5000); }
     catch(e){ console.warn('رفع للجميع فشل — سيُعاد تلقائيًا:',e); showUpdMsg(`✔ تم التحديث عندك من الإكسل (${tm}) — سيُرسل للجميع عند توفر الاتصال${warn}`, 'warn', 6000); }
-  }catch(e){ console.warn('sync',e); }   // ملف مقفل أثناء الحفظ — نعيد المحاولة في الدورة التالية
+  }catch(e){ console.warn('sync',e); if(++LINK.fails===5) showUpdMsg('تعذّرت قراءة ملف الإكسل من المتصفح ('+esc(e.name||'')+') — أغلقي الملف في Excel ثم اضغطي زر الربط 🔗 مرة ثانية','err',20000); }   // ملف مقفل أثناء الحفظ — نعيد المحاولة في الدورة التالية
   finally{ LINK.busy=false; }
 }
 function startSync(){ clearInterval(LINK.timer); LINK.timer=setInterval(syncTick,2000); linkUI('on'); }
@@ -1420,9 +1420,9 @@ async function linkFile(){
   try{
     if(!window.showOpenFilePicker) throw new Error('المزامنة المباشرة تتطلب Chrome أو Edge على الكمبيوتر');
     const [h]=await window.showOpenFilePicker({types:[{description:'Excel',accept:{'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':['.xlsx','.xlsm']}}]});
-    LINK.handle=h; LINK.lastMod=0; LINK.pendingMod=0;
+    let f; try{ f=await h.getFile(); }catch(_){ throw new Error('المتصفح لم يستطع قراءة الملف — أغلقي الملف في برنامج Excel ثم اضغطي زر الربط 🔗 مرة ثانية'); }
+    LINK.handle=h; LINK.lastMod=0; LINK.pendingMod=f.lastModified;   // أول قراءة فورية
     await kvSet('handle',h);
-    const f=await h.getFile(); LINK.pendingMod=f.lastModified;   // أول قراءة فورية
     startSync(); await syncTick(); if(LINK.lastMod===0){ LINK.pendingMod=f.lastModified; await syncTick(); }
   }catch(e){ if(e&&e.name==='AbortError') return; showUpdMsg('تعذّر ربط الملف: '+esc(e.message||e),'err'); }
 }
@@ -1446,11 +1446,10 @@ async function resumeLink(){
   try{
     const p=await LINK.handle.requestPermission({mode:'read'});
     if(p==='granted'){ LINK.lastMod=0; LINK.pendingMod=0; startSync(); const f=await LINK.handle.getFile(); LINK.pendingMod=f.lastModified; await syncTick(); }
-  }catch(e){ showUpdMsg('تعذّر استئناف المزامنة: '+esc(e.message||e),'err'); }
+  }catch(e){ clearInterval(LINK.timer); LINK.handle=null; kvSet('handle',null); linkUI(''); showUpdMsg('تعذّر استئناف المزامنة — اضغطي زر الربط 🔗 واختاري ملف الإكسل من جديد','err'); }
 }
 function onLinkClick(){
-  const b=document.getElementById('linkBtn');
-  if(LINK.handle && b.classList.contains('need')) resumeLink(); else linkFile();
+  linkFile();   // الزر يفتح دائمًا نافذة اختيار الملف (الاستئناف يتم بأي نقرة في الصفحة)
 }
 function getUploadPassword(forceAsk){
   let pw=''; try{ pw=localStorage.getItem('uploadPw')||''; }catch(_){}
