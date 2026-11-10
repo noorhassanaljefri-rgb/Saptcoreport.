@@ -1,6 +1,12 @@
 {
   "name": "saptco-dashboard",
   "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@netlify/blobs": "^8.1.0"
   }
