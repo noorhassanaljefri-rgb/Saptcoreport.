@@ -1908,11 +1908,12 @@ function chartDonut(containerId, labels, data, colors, opts={}){
   const cx=w/2, cy=plotH/2;
   const R = Math.max(Math.min(w,plotH)/2 - 6, 10);
   const r0 = R*(opts.cutout ?? 0.6);
-  const total = data.reduce((a,b)=>a+b,0);
+  const total = data.reduce((a,b)=>a+(b||0),0);
   let angle=-Math.PI/2, paths='';
   data.forEach((val,i)=>{
-    const frac = total>0?val/total:0;
-    const a0=angle, a1=angle+frac*2*Math.PI;
+    const frac = total>0?(val||0)/total:0;
+    // قوس 360° كامل يبدأ وينتهي في نفس النقطة فلا يُرسم، لذا نُنقصه جزءًا صغيرًا جدًا
+    const a0=angle, a1=angle+Math.min(frac*2*Math.PI, 2*Math.PI-0.004);
     angle=a1;
     if(frac<=0.0001) return;
     const large = (a1-a0)>Math.PI?1:0;
@@ -1920,7 +1921,7 @@ function chartDonut(containerId, labels, data, colors, opts={}){
     const x1=cx+R*Math.cos(a1), y1=cy+R*Math.sin(a1);
     const xi0=cx+r0*Math.cos(a1), yi0=cy+r0*Math.sin(a1);
     const xi1=cx+r0*Math.cos(a0), yi1=cy+r0*Math.sin(a0);
-    const d = `M${x0.toFixed(1)},${y0.toFixed(1)} A${R.toFixed(1)},${R.toFixed(1)} 0 ${large} 1 ${x1.toFixed(1)},${y1.toFixed(1)} L${xi0.toFixed(1)},${yi0.toFixed(1)} A${r0.toFixed(1)},${r0.toFixed(1)} 0 ${large} 0 ${xi1.toFixed(1)},${yi1.toFixed(1)} Z`;
+    const d = `M${x0.toFixed(2)},${y0.toFixed(2)} A${R.toFixed(2)},${R.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)} L${xi0.toFixed(2)},${yi0.toFixed(2)} A${r0.toFixed(2)},${r0.toFixed(2)} 0 ${large} 0 ${xi1.toFixed(2)},${yi1.toFixed(2)} Z`;
     const tip = opts.tipFmt? opts.tipFmt(labels[i],val,frac*100) : `${labels[i]}: ${val}`;
     paths += `<path d="${d}" fill="${colors[i%colors.length]}" stroke="#fff" stroke-width="2" data-tip="${escAttr(tip)}"></path>`;
   });
@@ -2047,28 +2048,21 @@ function buildChartsForTab(tab){
   if(tab==='overview') safeRun('tab:overview', ()=>{
     buildDailyTrendChart();
   });
-  else if(tab==='ridership') safeRun('tab:ridership', ()=>{
-    buildCommitmentChart();
-    buildSeptRouteChart();
-  });
-  else if(tab==='revenue') safeRun('tab:revenue', ()=>{
-    chartGauge('chartRevWeekly', REVENUE.week.actual/REVENUE.week.target*100, COL.gold, 'gaugeLabelWeekly');
-    chartGauge('chartRevCum', REVENUE.cum.actual/REVENUE.cum.target*100, COL.teal, 'gaugeLabelCum');
-    buildDailySubsDonut();
-  });
-  else if(tab==='fleet') safeRun('tab:fleet', ()=>{
-    renderNatChart(STATE.natMode);
-    buildFleetChart();
-  });
-  else if(tab==='safety') safeRun('tab:safety', ()=>{
-    buildInspectionChart();
-    buildNotesChart();
-    buildAccByNatChart();
-    buildAccCompare();
-    buildFaultCompare();
-    buildCameraCausesChart();
-    buildTicketsChart();
-  });
+  else if(tab==='ridership'){
+    safeRun('ridership:commit', buildCommitmentChart); safeRun('ridership:routes', buildSeptRouteChart);
+  }
+  else if(tab==='revenue'){
+    safeRun('revenue:week', ()=>chartGauge('chartRevWeekly', REVENUE.week.actual/REVENUE.week.target*100, COL.gold, 'gaugeLabelWeekly'));
+    safeRun('revenue:cum', ()=>chartGauge('chartRevCum', REVENUE.cum.actual/REVENUE.cum.target*100, COL.teal, 'gaugeLabelCum'));
+    safeRun('revenue:subs', buildDailySubsDonut);
+  }
+  else if(tab==='fleet'){
+    safeRun('fleet:nat', ()=>renderNatChart(STATE.natMode)); safeRun('fleet:buses', buildFleetChart);
+  }
+  else if(tab==='safety'){   // كل رسمة مستقلة: فشل واحدة لا يُخفي الباقي
+    [['insp',buildInspectionChart],['notes',buildNotesChart],['accNat',buildAccByNatChart],['accCmp',buildAccCompare],
+     ['faults',buildFaultCompare],['camCauses',buildCameraCausesChart],['tickets',buildTicketsChart]].forEach(([n,f])=>safeRun('safety:'+n,f));
+  }
 }
 
 function arLabel(dateStr){
