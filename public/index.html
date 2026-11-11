@@ -980,8 +980,22 @@ function applyWorkbook(book){
 
   run('خدمة العملاء', ()=>{
     const c = need('cus');
-    const row = r=>({total:c.num('B'+r), processing:c.num('C'+r), waiting:c.num('D'+r), closed:c.num('E'+r)});
-    CUSTOMER = {curr:row(2), prev:row(3)};
+    /* الأعمدة تُحدَّد من عناوين الصف 1 (إضافة/نقل عمود لا يخرّب القراءة). الافتراضي القديم: B إجمالي، C معالجة، D انتظار، E مغلقة */
+    const col = {total:'B', processing:'C', waiting:'D', closed:'E', open:null};
+    const found = {};
+    for(const L of _colLetters('B','Z')){
+      const t = _norm(c.str(L+'1')); if(!t) continue;
+      if(t.includes('انتظار')) found.waiting = found.waiting||L;
+      else if(t.includes('معالج')) found.processing = found.processing||L;
+      else if(t.includes('مغلق')) found.closed = found.closed||L;
+      else if(t.includes('مفتوح')) found.open = found.open||L;
+      else if(t.includes('اجمالي') && !found.total) found.total = L;
+    }
+    if(found.waiting || found.processing || found.closed) Object.assign(col, found);
+    const n = (L,r)=> L ? (c.num(L+r)||0) : 0;
+    const row = r=>{ const o = {processing:n(col.processing,r), waiting:n(col.waiting,r), closed:n(col.closed,r), open:n(col.open,r)};
+      o.total = c.num(col.total+r) ?? (o.processing+o.waiting+o.closed+o.open); return o; };
+    CUSTOMER = {curr:row(2), prev:row(3), hasOpen: !!col.open};
   });
 
   run('الموارد والأسطول', ()=>{
@@ -1102,7 +1116,7 @@ function renderChartStats(){
   box('sCam',[[fmt(CAMERA.totals.diff)+' راكب','إجمالي الفرق بين النظامين'],[fmt1(CAMERA.diffPct)+'%','نسبة الفرق من إركاب Streamax'],[top?top[0]:'-',top?`أكبر سبب للفرق — <span dir="ltr" style="unicode-bidi:isolate">${fmt1(top[1]/tot*100)}%</span>`:'']]);
   // tickets
   const c=CUSTOMER.curr,p=CUSTOMER.prev;
-  box('sTick',[[fmt(c.total),'التذاكر — الأسبوع الحالي (السابق '+fmt(p.total)+')'],[fmt(c.closed)+' ('+fmt1(c.closed/c.total*100)+'%)','مغلقة'],[fmt(c.processing+c.waiting),'غير مغلقة (معالجة / انتظار)','neg-text']]);
+  box('sTick',[[fmt(c.total),'التذاكر — الأسبوع الحالي (السابق '+fmt(p.total)+')'],[fmt(c.closed)+' ('+fmt1(c.closed/c.total*100)+'%)','مغلقة'],[fmt(c.processing+c.waiting+(c.open||0)),'غير مغلقة (معالجة / انتظار'+(CUSTOMER.hasOpen?' / مفتوحة':'')+')','neg-text']]);
 }
 
 function renderAllData(){
@@ -1628,10 +1642,11 @@ function renderInspStats(){
 }
 
 function buildTicketsChart(){
-  const c=CUSTOMER.curr, p=CUSTOMER.prev;
-  const labs=['تحت المعالجة','في انتظار الرد','مغلقة'], cols=[COL.gold,COL.red,COL.green];
-  chartDonut('chartTicketsPrev', labs, [p.processing,p.waiting,p.closed], cols, {cutout:0.62, centerText:{big:fmt(p.total), small:'السابق'}, tipFmt:(lab,v)=>`${lab}: ${fmt(v)} تذكرة`});
-  chartDonut('chartTickets', labs, [c.processing,c.waiting,c.closed], cols, {cutout:0.62, centerText:{big:fmt(c.total), small:'الحالي'}, tipFmt:(lab,v)=>`${lab}: ${fmt(v)} تذكرة`});
+  const c=CUSTOMER.curr, p=CUSTOMER.prev, op=CUSTOMER.hasOpen;
+  const labs=['تحت المعالجة','في انتظار الرد','مغلقة'].concat(op?['مفتوحة']:[]), cols=[COL.gold,COL.red,COL.green,COL.navyLight];
+  const vals = x=>[x.processing,x.waiting,x.closed].concat(op?[x.open]:[]);
+  chartDonut('chartTicketsPrev', labs, vals(p), cols, {cutout:0.62, centerText:{big:fmt(p.total), small:'السابق'}, tipFmt:(lab,v)=>`${lab}: ${fmt(v)} تذكرة`});
+  chartDonut('chartTickets', labs, vals(c), cols, {cutout:0.62, centerText:{big:fmt(c.total), small:'الحالي'}, tipFmt:(lab,v)=>`${lab}: ${fmt(v)} تذكرة`});
 }
 
 function renderCameraTable(){
