@@ -1774,14 +1774,19 @@ function incColor(name){ return /عطل|اعطال/.test(_norm(name)) ? COL.gold
 function buildIncTimesChart(){
   const T = INC_TIMES; if(!T) return;
   const hhmm = m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-  const slotOf = m => m==null ? -1 : m>=300&&m<600 ? 0 : m>=600&&m<900 ? 1 : m>=900&&m<1200 ? 2 : 3;
   T.series.slice(0,2).forEach((s,i)=>{
-    const list = INC_LIST && INC_LIST.find(l=>l.name===s.name);
-    chartBar('chartIncT'+i, T.labels, [{label:s.name.trim(), color:incColor(s.name), data:s.data}],
-      {maxBarW:56, legend:false, tipFmt:(lab,_s,v)=>{
-        const k=T.labels.indexOf(lab); let tip=`${s.name.trim()} — ${lab}: ${fmt(v)}`;
-        if(list && v){ const ts=list.items.filter(x=>slotOf(x.mins)===k).map(x=>x.mins).sort((a,b)=>a-b).map(hhmm); tip+=` (${ts.join('، ')})`; }
-        return tip; }});
+    const col = incColor(s.name), list = INC_LIST && INC_LIST.find(l=>l.name===s.name);
+    let labels = T.labels, values = s.data, tipOf = (lab,v)=>`${s.name.trim()} — ${lab}: ${fmt(v)}`;
+    if(list){   // أوقات فعلية متوفرة → خط بالساعة من 05:00 إلى 01:00
+      const hours = []; for(let hr=5; hr<=25; hr++) hours.push(hr%24);
+      labels = hours.map(hr=>`${String(hr).padStart(2,'0')}:00`);
+      const byH = hours.map(hr=>list.items.filter(x=>x.mins!=null && Math.floor(x.mins/60)===hr).map(x=>x.mins).sort((a,b)=>a-b));
+      values = byH.map(a=>a.length);
+      tipOf = (lab,v)=>{ const k=labels.indexOf(lab); return `${s.name.trim()} — الساعة ${lab}: ${fmt(v)}` + (v ? ` (${byH[k].map(hhmm).join('، ')})` : ''); };
+    }
+    const top = Math.max(...values,1)+1, ticks = top<=8 ? top : 4, max = top<=8 ? top : niceMax(top);   // أعداد صحيحة على المحور
+    chartLine('chartIncT'+i, labels, values, {min:0, max, ticks, color1:col, color2:col, splitIndex:values.length-1,
+      showValues:true, padL:24, padR:22, padT:18, tipFmt:tipOf});
   });
 }
 function renderIncTimes(){
@@ -2185,7 +2190,7 @@ function chartLine(containerId, labels, values, opts={}){
   const xAt = i=>padL+i*stepX;
   const yAt = v=>padT+plotH-((v-minV)/(maxV-minV))*plotH;
   let grid='';
-  const ticks=4;
+  const ticks=opts.ticks||4;
   for(let i=0;i<=ticks;i++){
     const v = minV+(maxV-minV)*i/ticks;
     const y=yAt(v);
@@ -2212,6 +2217,7 @@ function chartLine(containerId, labels, values, opts={}){
     const color = i<=splitIdx?c1:c2;
     const tip = opts.tipFmt?opts.tipFmt(labels[i],v):`${labels[i]}: ${v}`;
     points += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#fff" stroke="${color}" stroke-width="2" data-tip="${escAttr(tip)}"></circle>`;
+    if(opts.showValues && (v || opts.showZero)) points += svgText(x, y-8, fmt(v), {size:8.2, color:'#3A4452', weight:600, ltr:true});
   });
   let xlabels='';
   labels.forEach((lab,i)=>{
