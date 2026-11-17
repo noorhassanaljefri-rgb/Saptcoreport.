@@ -1297,13 +1297,15 @@ async function applyEmbedded(){
     try{ applyWorkbook(await readXlsx(cache.buf)); window.__lastXlsx=cache.buf; }catch(e){ console.error('cache2',e); }
   }
 }
+/* رابط GitHub صفحات ثابتة بدون خادم → نقرأ ونحفظ في خادم Railway نفسه، فيتحدّث الرابطان معًا */
+const API_BASE = /\.github\.io$/i.test(location.hostname) ? 'https://saptcoreport-production.up.railway.app' : '';
 /* آخر ملف مرفوع على الخادم — يظهر لكل من يفتح اللوحة */
 let _sharedStamp = null;
 async function applyShared(){
   try{
     if(typeof DecompressionStream==='undefined') return false;
     if(window.__pendingUpload) return false;
-    const r=await fetch('/api/dashboard-data?_='+Date.now(),{cache:'no-store'});
+    const r=await fetch(API_BASE+'/api/dashboard-data?_='+Date.now(),{cache:'no-store'});
     if(!r.ok) return false;
     const stamp=r.headers.get('X-Updated-At')||'';
     if(_sharedStamp!==null && stamp===_sharedStamp) return false;
@@ -1336,8 +1338,8 @@ async function pushSilently(name, buf){
   let pw=''; try{ pw=localStorage.getItem('uploadPw')||''; }catch(_){}
   if(!pw && !window.__pwAsked){ window.__pwAsked=true; pw=getUploadPassword(true); }
   if(!pw) throw new Error('لا توجد كلمة مرور');
-  let r=await fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
-  if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf}); }
+  let r=await fetch(API_BASE+'/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
+  if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await fetch(API_BASE+'/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf}); }
   if(!r.ok){ let m=''; try{ m=(await r.json()).error; }catch(_){} throw new Error(m||('فشل الرفع ('+r.status+')')); }
 }
 async function retryPending(){
@@ -1415,7 +1417,7 @@ function getUploadPassword(forceAsk){
 async function uploadShared(file, buf){
   let pw=getUploadPassword(false);
   if(!pw) throw new Error('لم تُدخل كلمة المرور — التحديث ظاهر لك فقط');
-  const send=()=>fetch('/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(file.name)},body:buf});
+  const send=()=>fetch(API_BASE+'/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(file.name)},body:buf});
   let r=await send();
   if(r.status===401){
     try{ localStorage.removeItem('uploadPw'); }catch(_){}
