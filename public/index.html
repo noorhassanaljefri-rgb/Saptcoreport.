@@ -491,6 +491,10 @@
       </section>
       <!-- ===== TAB: ABSTRACTS ===== -->
       <section class="tab-panel" id="tab-abstracts">
+        <div id="dieselSection" style="display:none">
+          <div class="section-title"><h2>فروقات الديزل</h2><div class="line"></div></div>
+          <div class="kpi-grid" id="kpiDiesel"></div>
+        </div>
         <div class="section-title"><h2>مراحل المستخلصات</h2><div class="line"></div></div>
         <div class="table-card">
           <div class="table-scroll">
@@ -690,6 +694,7 @@ let INCIDENTS = {respCurr:{}, respPrev:{}, byNationality:[], total:{}, faults:{}
 let CAMERA = {sample:[], totals:{}, diffPct:0}, CAMERA_CAUSES = [];
 let CUSTOMER = {curr:{}, prev:{}};
 let INC_TIMES = null;   // الأعطال والحوادث حسب الأوقات (جدول «الأوقات» في ورقة الحوادث)
+let DIESEL = [];   // فروقات الديزل من «موارد المشروع» (جدول بعنوان «فروقات الديزل»)
 let SEPT_ROUTE_TOTAL = {total:0, routes:[]};   // الإركاب التراكمي لكل مسار
 /* أهداف العقد: الرحلات والدورات تُقرأ من «الاداء التشغيلي» W3/W4، والسائقون والحافلات من W5/W6 (اختياري؛ إن تُركت فارغة تبقى القيم أدناه) */
 let CONTRACT = {trips:{actual:0, contract:0, missedCurr:0, missedPrev:0}, circuits:{actual:0, contract:0, missedCurr:0, missedPrev:0}, drivers:{actual:0, contract:213}, buses:{actual:0, contract:101}};
@@ -964,6 +969,27 @@ function applyWorkbook(book){
     NAT_EFF = eff;
   });
 
+  run('فروقات الديزل', ()=>{
+    DIESEL = [];
+    const t = S.res; if(!t) return;
+    const cols = _colLetters('A','Z');
+    let tc = null, tr = 0;
+    for(let r=1;r<=6 && !tc;r++) for(const c of cols){ if(_norm(t.str(c+r)).includes('فروقاتالديزل')){ tc=c; tr=r; break; } }
+    if(!tc) return;   // ملف بدون الجدول: يُخفى القسم
+    const hr = tr+1, out = [];
+    for(let i=cols.indexOf(tc);i<cols.length;i++){
+      const lab = t.str(cols[i]+hr); if(!lab) break;
+      if(!_norm(lab).includes('مبلغ')) continue;
+      const nx = cols[i+1], hasAct = nx && _norm(t.str(nx+hr)).includes('اجراء');
+      for(let r=hr+1;r<hr+6;r++){
+        const amt = t.num(cols[i]+r); if(amt==null) continue;
+        out.push({label:lab, year:(lab.match(/\d{4}/)||[''])[0], amount:amt, action: hasAct ? t.str(nx+r) : ''});
+        break;
+      }
+    }
+    DIESEL = out;
+  });
+
   run('أوقات الحوادث والأعطال', ()=>{
     INC_TIMES = null;
     const t = S.inc; if(!t) return;
@@ -1153,7 +1179,7 @@ function renderAllData(){
   safeRun('chartStats', renderChartStats);
   [['contractKPIs',renderContractKPIs],['ridershipKPIs',renderRidershipKPIs],['inspection',renderInspStats],['cameraTable',renderCameraTable],
    ['routesTable',renderRoutesTable],['gapTable',renderGapTable],['subsTable',renderSubsTable],['docsTable',renderDocsTable],
-   ['violations',renderViolations],['incTimes',renderIncTimes],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
+   ['violations',renderViolations],['incTimes',renderIncTimes],['diesel',renderDiesel],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
 }
 
 function showUpdMsg(html, kind, ms){
@@ -1534,6 +1560,14 @@ function renderSubsTable(){
 }
 
 let LICENSES = [];   // تُبنى من «موارد المشروع» J/K
+function renderDiesel(){
+  const sec = document.getElementById('dieselSection'); if(!sec) return;
+  sec.style.display = DIESEL.length ? '' : 'none';
+  document.getElementById('kpiDiesel').innerHTML = DIESEL.map(d=>kpiCardHTML({icon:'wallet',
+    label: d.year ? `فروقات الديزل ${d.year}` : d.label,
+    value: `${fmt(d.amount)} <span style="font-size:.5em;font-weight:600;color:var(--gray-500)">ريال</span>`,
+    sub: d.action ? `الإجراء: ${esc(d.action)}` : ''})).join('');
+}
 function renderLicenseCards(){
   document.getElementById('kpiLicenses').innerHTML = LICENSES.map(kpiCardHTML).join('');
 }
