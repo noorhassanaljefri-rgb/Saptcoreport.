@@ -24,6 +24,19 @@ const MIME = {
 };
 
 const noCache = { "Cache-Control": "no-store" };
+
+// رابط GitHub Pages يقرأ ويرفع إلى هذا الخادم نفسه → نسمح له فقط (CORS)
+const ALLOWED_ORIGIN = /^https:\/\/noorhassanaljefri-rgb\.github\.io$/i;
+function cors(req, res) {
+  const o = req.headers.origin;
+  if (!o || !ALLOWED_ORIGIN.test(o)) return;
+  res.setHeader("Access-Control-Allow-Origin", o);
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "x-upload-password, x-file-name, content-type");
+  res.setHeader("Access-Control-Expose-Headers", "X-Updated-At");
+  res.setHeader("Access-Control-Max-Age", "600");
+}
 function sendJson(res, status, obj) {
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", ...noCache });
   res.end(JSON.stringify(obj));
@@ -100,7 +113,11 @@ http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, "http://localhost");
     const store = STORES[url.pathname.replace(/\/$/, "")];
-    if (store) return await handleApi(req, res, store, url);
+    if (store) {
+      cors(req, res);
+      if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
+      return await handleApi(req, res, store, url);
+    }
     if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405); return res.end(); }
     return await serveStatic(req, res, url);
   } catch (e) {
