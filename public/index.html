@@ -580,6 +580,7 @@
             <div class="chart-sub" id="bIncTimesSub">الأسبوع الحالي — توزيع الأعطال والحوادث على فترات اليوم</div>
             <div class="stat-mini-grid" id="sIncTimes" style="margin:6px 0 12px;"></div>
             <div class="chart-wrap" style="height:300px"><div id="chartIncTimes" class="svg-chart"></div></div>
+            <div id="incListWrap" class="charts-grid two-up" style="margin:16px 0 0;display:none"></div>
           </div>
         </div>
         <div class="charts-grid">
@@ -706,6 +707,7 @@ let INCIDENTS = {respCurr:{}, respPrev:{}, byNationality:[], total:{}, faults:{}
 let CAMERA = {sample:[], totals:{}, diffPct:0}, CAMERA_CAUSES = [];
 let CUSTOMER = {curr:{}, prev:{}};
 let INC_TIMES = null;   // الأعطال والحوادث حسب الأوقات (جدول «الأوقات» في ورقة الحوادث)
+let INC_LIST = null;    // تفاصيل كل عطل/حادث (رقم الحافلة + الوقت) عند استخدام الشكل الجديد
 let DIESEL = [];   // فروقات الديزل من «موارد المشروع» (جدول بعنوان «فروقات الديزل»)
 let TICKETS = [];   // تفاصيل تذاكر خدمة العملاء (رقم البطاقة / التصنيف / الحالة)
 let SEPT_ROUTE_TOTAL = {total:0, routes:[]};   // الإركاب التراكمي لكل مسار
@@ -1018,12 +1020,34 @@ function applyWorkbook(book){
   });
 
   run('أوقات الحوادث والأعطال', ()=>{
-    INC_TIMES = null;
+    INC_TIMES = null; INC_LIST = null;
     const t = S.inc; if(!t) return;
     const cols = _colLetters('A','Z');
     let hc = null, hr = 0;
     for(let r=1;r<=5 && !hc;r++) for(const c of cols){ if(_norm(t.str(c+r)).includes('الاوقات')){ hc=c; hr=r; break; } }
-    if(!hc) return;   // ملف قديم بدون الجدول: تُخفى الرسمة
+    if(!hc){   // الشكل الجديد: قائمة (رقم الحافلة + الوقت) لكل عطل وحادث → نوزّعها على فترات اليوم
+      const lists = [];
+      for(let r=1;r<=3 && !lists.length;r++) for(let i=1;i<cols.length;i++){
+        if(_norm(t.str(cols[i]+r))!=='الوقت') continue;
+        const ic = cols[i-1], name = t.str(ic+r); if(!name || _norm(name)==='الوقت') continue;
+        const items = [];
+        for(let q=r+1;q<r+500;q++){
+          const bus = t.get(ic+q), tv = t.get(cols[i]+q);
+          if((bus==null||bus==='') && (tv==null||tv==='')) break;
+          let mins = null;
+          if(typeof tv==='number') mins = Math.round((tv%1)*1440)%1440;
+          else { const m = String(tv||'').match(/(\d{1,2})\s*[:٫.]\s*(\d{2})/); if(m) mins = (+m[1])*60+(+m[2]); }
+          items.push({bus: typeof bus==='number' ? String(Math.round(bus)) : String(bus||'-').trim(), mins});
+        }
+        if(items.length) lists.push({name:name.trim(), items});
+      }
+      if(!lists.length) return;   // لا يوجد جدول أوقات: تُخفى الرسمة
+      const labels = ['05:00 – 10:00','10:00 – 15:00','15:00 – 20:00','20:00 – 02:00'];
+      const slotOf = m => m==null ? -1 : m>=300&&m<600 ? 0 : m>=600&&m<900 ? 1 : m>=900&&m<1200 ? 2 : 3;
+      INC_LIST = lists;
+      INC_TIMES = {labels, series: lists.map(l=>({name:l.name, data:labels.map((_,k)=>l.items.filter(x=>slotOf(x.mins)===k).length)}))};
+      return;
+    }
     const slots = [];
     for(let i=cols.indexOf(hc)+1;i<cols.length;i++){ const lab=t.str(cols[i]+hr); if(!lab) break; slots.push({col:cols[i], label:lab}); }
     const series = [];
@@ -1755,6 +1779,14 @@ function renderIncTimes(){
   });
   box.style.gridTemplateColumns = `repeat(${items.length},1fr)`;
   box.innerHTML = items.map(([v,l])=>`<div class="stat-mini"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  const wrap = document.getElementById('incListWrap'); if(!wrap) return;
+  wrap.style.display = INC_LIST ? '' : 'none'; if(!INC_LIST){ wrap.innerHTML=''; return; }
+  const hhmm = m => m==null ? '-' : `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  wrap.innerHTML = INC_LIST.map(l=>{
+    const rows = [...l.items].sort((a,b)=>(a.mins??9999)-(b.mins??9999)).map(x=>`<tr><td><span dir="ltr" style="unicode-bidi:isolate">${esc(x.bus)}</span></td><td class="num"><span dir="ltr" style="unicode-bidi:isolate">${hhmm(x.mins)}</span></td></tr>`).join('');
+    return `<div style="min-width:0"><div class="chart-sub" style="font-weight:600;color:var(--gray-700)">${esc(l.name)} (${l.items.length})</div>
+      <div class="table-card" style="margin:0;box-shadow:none"><div class="table-scroll" style="max-height:320px;overflow-y:auto"><table style="min-width:0"><thead><tr><th>رقم الحافلة</th><th class="num">الوقت</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+  }).join('');
 }
 function buildFaultCompare(){
   const F=INCIDENTS.faults;
