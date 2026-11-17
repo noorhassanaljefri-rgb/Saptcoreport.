@@ -626,6 +626,18 @@
             </div>
           </div>
         </div>
+        <div id="ticketsDetailSection" style="display:none">
+          <div class="section-title"><h2>تفاصيل التذاكر</h2><div class="line"></div><div class="badge-count" id="bTicketsCount"></div></div>
+          <div class="chart-sub" id="bTicketsByCat" style="margin:-4px 4px 10px;"></div>
+          <div class="table-card" style="margin-bottom:16px;">
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>رقم البطاقة</th><th>التصنيف</th><th>الحالة</th></tr></thead>
+                <tbody id="ticketsDetailBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -695,6 +707,7 @@ let CAMERA = {sample:[], totals:{}, diffPct:0}, CAMERA_CAUSES = [];
 let CUSTOMER = {curr:{}, prev:{}};
 let INC_TIMES = null;   // الأعطال والحوادث حسب الأوقات (جدول «الأوقات» في ورقة الحوادث)
 let DIESEL = [];   // فروقات الديزل من «موارد المشروع» (جدول بعنوان «فروقات الديزل»)
+let TICKETS = [];   // تفاصيل تذاكر خدمة العملاء (رقم البطاقة / التصنيف / الحالة)
 let SEPT_ROUTE_TOTAL = {total:0, routes:[]};   // الإركاب التراكمي لكل مسار
 /* أهداف العقد: الرحلات والدورات تُقرأ من «الاداء التشغيلي» W3/W4، والسائقون والحافلات من W5/W6 (اختياري؛ إن تُركت فارغة تبقى القيم أدناه) */
 let CONTRACT = {trips:{actual:0, contract:0, missedCurr:0, missedPrev:0}, circuits:{actual:0, contract:0, missedCurr:0, missedPrev:0}, drivers:{actual:0, contract:213}, buses:{actual:0, contract:101}};
@@ -969,6 +982,20 @@ function applyWorkbook(book){
     NAT_EFF = eff;
   });
 
+  run('تفاصيل التذاكر', ()=>{
+    TICKETS = [];
+    const c = S.cus; if(!c) return;
+    const cols = _colLetters('A','Z');
+    let hr = 0, cn = null, cc = null, cs = null;
+    for(let r=1;r<=5 && !cn;r++) for(const L of cols){ if(_norm(c.str(L+r)).includes('رقمالبطاقة')){ cn=L; hr=r; break; } }
+    if(!cn) return;   // ملف بدون الجدول: يُخفى القسم
+    for(const L of cols){ const t=_norm(c.str(L+hr)); if(!cc && t.includes('التصنيف')) cc=L; else if(!cs && t==='الحالة') cs=L; }
+    for(let r=hr+1;r<hr+500;r++){
+      const no = c.str(cn+r); if(!no) break;
+      TICKETS.push({no, cat: cc?c.str(cc+r):'', status: cs?c.str(cs+r):''});
+    }
+  });
+
   run('فروقات الديزل', ()=>{
     DIESEL = [];
     const t = S.res; if(!t) return;
@@ -1179,7 +1206,7 @@ function renderAllData(){
   safeRun('chartStats', renderChartStats);
   [['contractKPIs',renderContractKPIs],['ridershipKPIs',renderRidershipKPIs],['inspection',renderInspStats],['cameraTable',renderCameraTable],
    ['routesTable',renderRoutesTable],['gapTable',renderGapTable],['subsTable',renderSubsTable],['docsTable',renderDocsTable],
-   ['violations',renderViolations],['incTimes',renderIncTimes],['diesel',renderDiesel],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
+   ['violations',renderViolations],['incTimes',renderIncTimes],['diesel',renderDiesel],['ticketsDetail',renderTicketsDetail],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
 }
 
 function showUpdMsg(html, kind, ms){
@@ -1560,6 +1587,19 @@ function renderSubsTable(){
 }
 
 let LICENSES = [];   // تُبنى من «موارد المشروع» J/K
+function ticketPill(s){
+  const t=_norm(s).toLowerCase();
+  const cls = /مغلق|closed/.test(t) ? 'ok' : /reopen|اعاده|انتظ/.test(t) ? 'bad' : /معالج/.test(t) ? 'warn' : 'neu';
+  return `<span class="pill ${cls}">${esc(s||'-')}</span>`;
+}
+function renderTicketsDetail(){
+  const sec=document.getElementById('ticketsDetailSection'); if(!sec) return;
+  sec.style.display = TICKETS.length ? '' : 'none'; if(!TICKETS.length) return;
+  document.getElementById('bTicketsCount').textContent = `${TICKETS.length} تذكرة`;
+  const by={}; TICKETS.forEach(t=>{ const k=t.cat||'غير مصنف'; by[k]=(by[k]||0)+1; });
+  document.getElementById('bTicketsByCat').textContent = 'حسب التصنيف: ' + Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} (${v})`).join(' · ');
+  document.getElementById('ticketsDetailBody').innerHTML = TICKETS.map(t=>`<tr><td><span dir="ltr" style="unicode-bidi:isolate">${esc(t.no)}</span></td><td>${esc(t.cat||'-')}</td><td>${ticketPill(t.status)}</td></tr>`).join('');
+}
 function renderDiesel(){
   const sec = document.getElementById('dieselSection'); if(!sec) return;
   sec.style.display = DIESEL.length ? '' : 'none';
