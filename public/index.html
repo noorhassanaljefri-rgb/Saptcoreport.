@@ -567,20 +567,20 @@
             <div class="chart-head"><h3><span class="dot"></span>الحوادث — الحالي مقابل السابق</h3></div>
             <div class="chart-sub" id="bAccCmpSub">إجمالي الحوادث (28 مقابل 19) ونسب المسؤولية</div>
             <div class="chart-wrap"><div id="chartAccCompare" class="svg-chart"></div></div>
+            <div id="incTimesAcc" style="display:none;margin-top:14px;border-top:1px solid var(--gray-200);padding-top:12px">
+              <div class="chart-sub" style="font-weight:600;color:var(--gray-700)">الحوادث حسب الوقت</div>
+              <div class="stat-mini-grid" id="sIncAcc" style="grid-template-columns:1fr;margin:6px 0 8px"></div>
+              <div class="chart-wrap" style="height:260px"><div id="chartIncAcc" class="svg-chart"></div></div>
+            </div>
           </div>
           <div class="chart-card">
             <div class="chart-head"><h3><span class="dot"></span>الأعطال — الحالي مقابل السابق</h3></div>
             <div class="chart-sub" id="bFaultSub">إجمالي الأعطال (15 مقابل 13) حسب النوع</div>
             <div class="chart-wrap"><div id="chartFaultCompare" class="svg-chart"></div></div>
-          </div>
-        </div>
-        <div class="charts-grid" id="incTimesCard" style="display:none">
-          <div class="chart-card full">
-            <div class="chart-head"><h3><span class="dot"></span>الأعطال والحوادث حسب الأوقات</h3></div>
-            <div class="chart-sub" id="bIncTimesSub">الأسبوع الحالي — توزيع الأعطال والحوادث على فترات اليوم</div>
-            <div class="charts-grid two-up" style="margin:10px 0 0">
-              <div style="min-width:0"><div class="stat-mini-grid" id="sIncT0" style="grid-template-columns:1fr;margin-bottom:8px"></div><div class="chart-wrap" style="height:280px"><div id="chartIncT0" class="svg-chart"></div></div></div>
-              <div style="min-width:0"><div class="stat-mini-grid" id="sIncT1" style="grid-template-columns:1fr;margin-bottom:8px"></div><div class="chart-wrap" style="height:280px"><div id="chartIncT1" class="svg-chart"></div></div></div>
+            <div id="incTimesFault" style="display:none;margin-top:14px;border-top:1px solid var(--gray-200);padding-top:12px">
+              <div class="chart-sub" style="font-weight:600;color:var(--gray-700)">الأعطال حسب الوقت</div>
+              <div class="stat-mini-grid" id="sIncFault" style="grid-template-columns:1fr;margin:6px 0 8px"></div>
+              <div class="chart-wrap" style="height:260px"><div id="chartIncFault" class="svg-chart"></div></div>
             </div>
           </div>
         </div>
@@ -1771,10 +1771,14 @@ function buildAccCompare(){
     {maxBarW:80, gap:6, tipFmt:(lab,s,v)=>`${lab} — ${s}: ${fmt(v)}`});
 }
 function incColor(name){ return /عطل|اعطال/.test(_norm(name)) ? COL.gold : /حادث|حوادث/.test(_norm(name)) ? COL.red : COL.navy; }
+/* كل نوع يُرسم تحت رسمته: الحوادث تحت «الحوادث — الحالي مقابل السابق» والأعطال تحت «الأعطال» */
+const INC_SLOTS = [{key:'Acc', re:/حادث|حوادث/}, {key:'Fault', re:/عطل|اعطال/}];
+function incSeriesFor(re){ return INC_TIMES ? INC_TIMES.series.find(s=>re.test(_norm(s.name))) : null; }
 function buildIncTimesChart(){
   const T = INC_TIMES; if(!T) return;
   const hhmm = m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-  T.series.slice(0,2).forEach((s,i)=>{
+  INC_SLOTS.forEach(({key,re})=>{
+    const s = incSeriesFor(re); if(!s) return;
     const col = incColor(s.name), list = INC_LIST && INC_LIST.find(l=>l.name===s.name);
     let labels = T.labels, values = s.data, tipOf = (lab,v)=>`${s.name.trim()} — ${lab}: ${fmt(v)}`;
     if(list){   // أوقات فعلية متوفرة → خط بالساعة من 05:00 إلى 01:00
@@ -1785,16 +1789,15 @@ function buildIncTimesChart(){
       tipOf = (lab,v)=>{ const k=labels.indexOf(lab); return `${s.name.trim()} — الساعة ${lab}: ${fmt(v)}` + (v ? ` (${byH[k].map(hhmm).join('، ')})` : ''); };
     }
     const top = Math.max(...values,1)+1, ticks = top<=8 ? top : 4, max = top<=8 ? top : niceMax(top);   // أعداد صحيحة على المحور
-    chartLine('chartIncT'+i, labels, values, {min:0, max, ticks, color1:col, color2:col, splitIndex:values.length-1,
+    chartLine('chartInc'+key, labels, values, {min:0, max, ticks, color1:col, color2:col, splitIndex:values.length-1,
       showValues:true, padL:24, padR:22, padT:18, tipFmt:tipOf});
   });
 }
 function renderIncTimes(){
-  const card = document.getElementById('incTimesCard'); if(!card) return;
-  card.style.display = INC_TIMES ? '' : 'none'; if(!INC_TIMES) return;
-  [0,1].forEach(i=>{
-    const box = document.getElementById('sIncT'+i), s = INC_TIMES.series[i]; if(!box) return;
-    box.parentElement.style.display = s ? '' : 'none'; if(!s) return;
+  INC_SLOTS.forEach(({key,re})=>{
+    const wrap = document.getElementById('incTimes'+key), box = document.getElementById('sInc'+key); if(!wrap||!box) return;
+    const s = incSeriesFor(re);
+    wrap.style.display = s ? '' : 'none'; if(!s) return;
     const tot = s.data.reduce((a,b)=>a+b,0), mi = s.data.indexOf(Math.max(...s.data));
     box.innerHTML = `<div class="stat-mini"><div class="v" style="color:${incColor(s.name)}">${fmt(tot)} <span style="font-size:.6em;font-weight:600">${esc(s.name.trim())}</span></div><div class="l">أكثر فترة: <bdi dir="ltr">\u2066${tot?INC_TIMES.labels[mi]:'-'}\u2069</bdi></div></div>`;
   });
