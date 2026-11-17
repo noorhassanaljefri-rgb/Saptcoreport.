@@ -580,7 +580,10 @@
             <div class="chart-sub" id="bIncTimesSub">الأسبوع الحالي — توزيع الأعطال والحوادث على فترات اليوم</div>
             <div class="stat-mini-grid" id="sIncTimes" style="margin:6px 0 12px;"></div>
             <div class="chart-wrap" style="height:300px"><div id="chartIncTimes" class="svg-chart"></div></div>
-            <div id="incListWrap" class="charts-grid two-up" style="margin:16px 0 0;display:none"></div>
+            <div id="incListWrap" style="margin:18px 0 0;display:none">
+              <div class="chart-sub" style="font-weight:600;color:var(--gray-700)">الأعطال والحوادث على مدار اليوم — رقم الحافلة ووقت كل عطل وحادث</div>
+              <div dir="ltr" style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div class="chart-wrap" style="height:380px;min-width:760px" dir="rtl"><div id="chartIncTimeline" class="svg-chart"></div></div></div>
+            </div>
           </div>
         </div>
         <div class="charts-grid">
@@ -1768,6 +1771,46 @@ function buildIncTimesChart(){
   const colorOf = s=>/عطل|اعطال/.test(_norm(s.name)) ? COL.gold : /حادث|حوادث/.test(_norm(s.name)) ? COL.red : COL.navy;
   chartBar('chartIncTimes', T.labels, T.series.map(s=>({label:s.name.trim(), color:colorOf(s), data:s.data})),
     {maxBarW:70, gap:6, tipFmt:(lab,s,v)=>`${s} — ${lab}: ${fmt(v)}`});
+  if(INC_LIST) chartIncTimeline('chartIncTimeline', INC_LIST);
+}
+/* خط زمني لليوم: كل عطل/حادث نقطة عند وقته مع رقم الحافلة (الأعطال فوق المحور والحوادث تحته) */
+function chartIncTimeline(containerId, lists){
+  const {w,h} = csize(containerId);
+  const padL=16, padR=16, axisY=h/2, T0=5*60, T1=26*60;            // من 05:00 إلى 02:00 من اليوم التالي
+  const X = m=>{ let v = m<T0 ? m+1440 : m; v=Math.min(Math.max(v,T0),T1); return padL+(v-T0)/(T1-T0)*(w-padL-padR); };
+  const colorOf = n=>/عطل|اعطال/.test(_norm(n)) ? COL.gold : /حادث|حوادث/.test(_norm(n)) ? COL.red : COL.navy;
+  const hhmm = m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  let g='';
+  // فترات اليوم (نفس فترات الرسم أعلاه) كخلفية
+  [[300,600],[600,900],[900,1200],[1200,1560]].forEach(([a,b],k)=>{
+    g+=`<rect x="${X(a).toFixed(1)}" y="8" width="${(X(b)-X(a)).toFixed(1)}" height="${(h-16).toFixed(1)}" fill="${k%2?'#F6F7FA':'#FFFFFF'}"/>`;
+  });
+  // المحور وعلامات الساعات
+  g+=`<line x1="${padL}" y1="${axisY}" x2="${w-padR}" y2="${axisY}" stroke="#C7CFDC" stroke-width="1.2"/>`;
+  for(let m=T0;m<=T1;m+=60){
+    const x=X(m), major=(m/60)%2===1;
+    g+=`<line x1="${x.toFixed(1)}" y1="${axisY-4}" x2="${x.toFixed(1)}" y2="${axisY+4}" stroke="#B4BCC8"/>`;
+    if(major) g+=svgText(x, axisY+3.5, hhmm(m%1440), {size:7.2, color:'#8B94A3', ltr:true}).replace('<text ','<text dominant-baseline="middle" paint-order="stroke" stroke="#fff" stroke-width="4" ');
+  }
+  const laneMax = axisY-26, step = Math.max(34, Math.min(62, (laneMax-28)/2));
+  lists.slice(0,2).forEach((l,li)=>{
+    const dir = li===0 ? -1 : 1, col = colorOf(l.name);
+    // اسم المسار
+    g+=svgRightLabel(w-padR-2, li===0 ? 22 : h-12, `${l.name.trim()} (${l.items.length})`, {size:8.6, color:col, weight:700});
+    const pts = l.items.filter(x=>x.mins!=null).map(x=>({...x, x:X(x.mins)})).sort((a,b)=>a.x-b.x);
+    const lastX = [];   // آخر x مستخدم في كل مستوى لتفادي تداخل الأرقام
+    pts.forEach(p=>{
+      let lv=0; while(lastX[lv]!=null && p.x-lastX[lv]<17) lv++;
+      lastX[lv]=p.x; const lvl = lv%3;
+      const d = 22 + lvl*step, y = axisY + dir*d;
+      g+=`<line x1="${p.x.toFixed(1)}" y1="${axisY}" x2="${p.x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="1.2" opacity=".55"/>`;
+      const tip = `${l.name.trim()} — حافلة ${p.bus} — ${hhmm(p.mins)}`;
+      g+=`<circle cx="${p.x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5" data-tip="${escAttr(tip)}"/>`;
+      const ly = y + dir*9, fs = Math.round(8*CHART_FS*10)/10;
+      g+=`<text x="${p.x.toFixed(1)}" y="${ly.toFixed(1)}" font-size="${fs}" fill="#3A4452" font-weight="600" direction="ltr" unicode-bidi="isolate" text-anchor="${dir<0?'start':'end'}" dominant-baseline="middle" transform="rotate(-90 ${p.x.toFixed(1)} ${ly.toFixed(1)})" data-tip="${escAttr(tip)}">${esc(p.bus)}</text>`;
+    });
+  });
+  document.getElementById(containerId).innerHTML = svgWrap(w,h,g);
 }
 function renderIncTimes(){
   const card = document.getElementById('incTimesCard'); if(!card) return;
@@ -1779,14 +1822,7 @@ function renderIncTimes(){
   });
   box.style.gridTemplateColumns = `repeat(${items.length},1fr)`;
   box.innerHTML = items.map(([v,l])=>`<div class="stat-mini"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
-  const wrap = document.getElementById('incListWrap'); if(!wrap) return;
-  wrap.style.display = INC_LIST ? '' : 'none'; if(!INC_LIST){ wrap.innerHTML=''; return; }
-  const hhmm = m => m==null ? '-' : `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-  wrap.innerHTML = INC_LIST.map(l=>{
-    const rows = [...l.items].sort((a,b)=>(a.mins??9999)-(b.mins??9999)).map(x=>`<tr><td><span dir="ltr" style="unicode-bidi:isolate">${esc(x.bus)}</span></td><td class="num"><span dir="ltr" style="unicode-bidi:isolate">${hhmm(x.mins)}</span></td></tr>`).join('');
-    return `<div style="min-width:0"><div class="chart-sub" style="font-weight:600;color:var(--gray-700)">${esc(l.name)} (${l.items.length})</div>
-      <div class="table-card" style="margin:0;box-shadow:none"><div class="table-scroll" style="max-height:320px;overflow-y:auto"><table style="min-width:0"><thead><tr><th>رقم الحافلة</th><th class="num">الوقت</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
-  }).join('');
+  const wrap = document.getElementById('incListWrap'); if(wrap) wrap.style.display = INC_LIST ? '' : 'none';
 }
 function buildFaultCompare(){
   const F=INCIDENTS.faults;
