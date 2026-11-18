@@ -1404,6 +1404,7 @@ async function applyShared(){
 /* تحديث تلقائي: كل دقيقة نتحقق إن كان هناك ملف أحدث على الخادم ونعيد رسم اللوحة */
 setInterval(async()=>{
   if(document.hidden) return;
+  if(window.__pendingUpload){ await retryPending(); return; }   // تحديث على هذا الجهاز لم يصل للخادم → نعيد رفعه حتى يصل للجميع
   if(await applyShared()){
     renderAllData();
     const a=document.querySelector('#navList .nav-item.active'); buildChartsForTab(a?a.dataset.tab:'overview');
@@ -1421,8 +1422,7 @@ function embeddedTs(){ const e=document.getElementById('embeddedXlsxDate'); retu
 async function markUploaded(){ const c=await kvGet('lastXlsx'); if(c){ c.pending=false; await kvSet('lastXlsx',c); } window.__pendingUpload=false; }
 async function pushSilently(name, buf){
   let pw=''; try{ pw=localStorage.getItem('uploadPw')||''; }catch(_){}
-  if(!pw && !window.__pwAsked){ window.__pwAsked=true; pw=getUploadPassword(true); }
-  if(!pw) throw new Error('لا توجد كلمة مرور');
+  if(!pw) pw=getUploadPassword(false);
   let r=await fetch(API_BASE+'/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf});
   if(r.status===401){ try{ localStorage.removeItem('uploadPw'); }catch(_){} pw=getUploadPassword(true); if(!pw) throw new Error('لم تُدخل كلمة المرور'); r=await fetch(API_BASE+'/api/dashboard-data',{method:'POST',headers:{'x-upload-password':pw,'x-file-name':encodeURIComponent(name)},body:buf}); }
   if(!r.ok){ let m=''; try{ m=(await r.json()).error; }catch(_){} throw new Error(m||('فشل الرفع ('+r.status+')')); }
@@ -1493,7 +1493,8 @@ function onLinkClick(){
 }
 function getUploadPassword(forceAsk){
   let pw=''; try{ pw=localStorage.getItem('uploadPw')||''; }catch(_){}
-  if(!pw||forceAsk){
+  if(!forceAsk) return pw||'saptco';   // الخادم لا يطلب كلمة مرور — لا نوقف الرفع بنافذة سؤال
+  {
     pw=prompt('أدخلي كلمة مرور التحديث:')||'';
     if(pw){ try{ localStorage.setItem('uploadPw',pw); }catch(_){} }
   }
