@@ -368,6 +368,25 @@
 
       <!-- ===== TAB: RIDERSHIP ===== -->
       <section class="tab-panel" id="tab-ridership">
+        <div class="section-title">
+          <h2>تفاصيل المسارات</h2><div class="line"></div>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="16" y1="16" x2="21" y2="21"/></svg>
+            <input type="text" id="routeSearch" placeholder="ابحث برقم المسار (مثال: L7)">
+          </div>
+        </div>
+        <div class="chart-sub" id="bRouteSub" style="margin:-4px 4px 10px;"></div>
+        <div class="table-card">
+          <div class="table-scroll">
+            <table id="routesTable">
+              <thead>
+                <tr><th rowspan="2">رقم المسار</th><th class="num grp" colspan="3">الإركاب</th><th class="num grp" colspan="3">الرحلات</th><th class="num grp" colspan="3">الدورات</th><th class="num grp" colspan="3">متوسط الإركاب</th></tr>
+                <tr><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th></tr>
+              </thead>
+              <tbody id="routesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
         <div class="section-title"><h2 id="bSeptTitle">الإركاب حسب المسار — تراكمي شهر أكتوبر</h2><div class="line"></div></div>
         <div class="charts-grid">
           <div class="chart-card full">
@@ -407,25 +426,6 @@
                 </tr>
               </thead>
               <tbody id="gapTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="section-title">
-          <h2>تفاصيل المسارات</h2><div class="line"></div>
-          <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="16" y1="16" x2="21" y2="21"/></svg>
-            <input type="text" id="routeSearch" placeholder="ابحث برقم المسار (مثال: L7)">
-          </div>
-        </div>
-        <div class="chart-sub" id="bRouteSub" style="margin:-4px 4px 10px;"></div>
-        <div class="table-card">
-          <div class="table-scroll">
-            <table id="routesTable">
-              <thead>
-                <tr><th rowspan="2">رقم المسار</th><th class="num grp" colspan="3">الإركاب</th><th class="num grp" colspan="3">الرحلات</th><th class="num grp" colspan="3">الدورات</th><th class="num grp" colspan="3">متوسط الإركاب</th></tr>
-                <tr><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th><th class="num">السابق</th><th class="num">الحالي</th><th class="num">الفرق</th></tr>
-              </thead>
-              <tbody id="routesTableBody"></tbody>
             </table>
           </div>
         </div>
