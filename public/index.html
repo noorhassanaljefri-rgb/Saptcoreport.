@@ -256,6 +256,18 @@
   #monthlyWrap{display:none;} body.mode-monthly #monthlyWrap{display:block;}
   body.mode-monthly .main > .topbar, body.mode-monthly .main > main.content, body.mode-monthly .main > footer{display:none;}
   #monthlyFrame{width:100%; height:100vh; border:0; display:block; background:#F7F8FA;}
+  .svc-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:16px;}
+  .svc-card{background:var(--card); border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; min-width:0;}
+  .svc-imgs{display:grid; gap:2px; background:var(--gray-100);} .svc-imgs.multi{grid-template-columns:1fr 1fr;}
+  .svc-img{display:block; padding:0; border:0; background:none; cursor:zoom-in; width:100%;}
+  .svc-img img{display:block; width:100%; height:auto; max-height:72vh; object-fit:contain; background:#fff;}
+  .svc-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px;}
+  .svc-h{display:block; font-size:11.5px; font-weight:600; color:var(--gold-700,#8a6420); margin-bottom:3px;}
+  .svc-text p{margin:0; font-size:14px; line-height:1.8; color:var(--gray-700);}
+  .svc-lightbox{display:none; position:fixed; inset:0; z-index:100; background:rgba(8,20,34,.88); align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
+  .svc-lightbox.show{display:flex;} .svc-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.4); cursor:default;}
+  .svc-close{position:absolute; top:14px; inset-inline-end:18px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.15); color:#fff; font-size:26px; line-height:1; cursor:pointer;}
+  @media (max-width:560px){ .svc-grid{grid-template-columns:1fr;} }
   .cstat{margin:6px 0 12px;} .cstat .stat-mini .v{font-size:18px;} .cstat .stat-mini .l b{font-weight:600; color:var(--gray-700);}
 
   .gap-table{font-size:14px; border-collapse:separate; border-spacing:0;}
@@ -312,6 +324,7 @@
       <button class="nav-item" data-tab="revenue" type="button"></button>
       <button class="nav-item" data-tab="safety" type="button"></button>
       <button class="nav-item" data-tab="abstracts" type="button"></button>
+      <button class="nav-item" data-tab="services" type="button"></button>
     </nav>
     <div class="sidebar-footer" id="sideFootMonthly" style="display:none;">
       <div><b>آخر شهر إركاب:</b> <span id="bMonthLast"></span></div>
@@ -518,6 +531,12 @@
           </div>
         </div>
       </section>
+      <!-- ===== TAB: SERVICES ===== -->
+      <section class="tab-panel" id="tab-services">
+        <div class="section-title" style="margin-top:6px;"><h2>الخدمات</h2><span class="badge-count" id="bServicesCount"></span><div class="line"></div></div>
+        <div class="svc-grid" id="servicesGrid"></div>
+        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات في ملف الإكسل — أضيفيها في ورقة «الخدمات» (عمود التعليق وعمود الصور).</div>
+      </section>
       <!-- ===== TAB: FLEET & RESOURCES ===== -->
       <section class="tab-panel" id="tab-fleet">
         <div class="section-title" style="margin-top:6px;"><h2>موارد المشروع</h2><div class="line"></div></div>
@@ -662,6 +681,7 @@
    ===================================================================== */
 /* ============================= ICONS ============================= */
 const ICONS = {
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/>',
   grid: '<rect x="3.4" y="3.4" width="7.6" height="7.6" rx="1.6"/><rect x="13" y="3.4" width="7.6" height="7.6" rx="1.6"/><rect x="3.4" y="13" width="7.6" height="7.6" rx="1.6"/><rect x="13" y="13" width="7.6" height="7.6" rx="1.6"/>',
   route: '<circle cx="6" cy="6.5" r="2.3"/><circle cx="18" cy="17.5" r="2.3"/><path d="M6 8.8V13a4 4 0 0 0 4 4h4a4 4 0 0 1 4 1"/>',
   wallet: '<path d="M3.6 7.6a2 2 0 0 1 2-2h11.8a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2H5.6a2 2 0 0 1-2-2Z"/><path d="M15 12.5h3.4"/>',
@@ -710,6 +730,7 @@ let CUSTOMER = {curr:{}, prev:{}};
 let INC_TIMES = null;   // الأعطال والحوادث حسب الأوقات (جدول «الأوقات» في ورقة الحوادث)
 let INC_LIST = null;    // تفاصيل كل عطل/حادث (رقم الحافلة + الوقت) عند استخدام الشكل الجديد
 let DIESEL = [];   // فروقات الديزل من «موارد المشروع» (جدول بعنوان «فروقات الديزل»)
+let SERVICES = [];  // الخدمات: [{text, images:[src]}] من ورقة «الخدمات»
 let TICKETS = [];   // تفاصيل تذاكر خدمة العملاء (رقم البطاقة / التصنيف / الحالة)
 let SEPT_ROUTE_TOTAL = {total:0, routes:[]};   // الإركاب التراكمي لكل مسار
 /* أهداف العقد: الرحلات والدورات تُقرأ من «الاداء التشغيلي» W3/W4، والسائقون والحافلات من W5/W6 (اختياري؛ إن تُركت فارغة تبقى القيم أدناه) */
@@ -732,12 +753,14 @@ const NAV_ITEMS = [
   {tab:'revenue', label:'الإيرادات والاشتراكات', icon:'wallet'},
   {tab:'safety', label:'السلامة والجودة', icon:'shield'},
   {tab:'abstracts', label:'المستخلصات', icon:'layers'},
+  {tab:'services', label:'الخدمات', icon:'heart'},
 ];
 const PAGE_TITLES = {
   overview:{title:'نظرة عامة', sub:'ملخص الأداء التشغيلي الأسبوعي — مقارنة الأسبوع الحالي بالأسبوع السابق'},
   ridership:{title:'الإركاب والمسارات', sub:'أداء الإركاب وتفاصيل المسارات الـ17 ومعدلات الالتزام'},
   revenue:{title:'الإيرادات والاشتراكات', sub:'تحقيق الإيرادات مقابل المستهدف، أداء الاشتراكات'},
   abstracts:{title:'المستخلصات', sub:'مراحل اعتماد المطالبات وصرف مبالغ الدعم الشهرية'},
+  services:{title:'الخدمات', sub:'المبادرات والخدمات المقدّمة خلال الفترة — بالصور والتعليقات'},
   fleet:{title:'الموارد والأسطول', sub:'السائقون وجنسياتهم، أسطول الحافلات، وحالة الوثائق'},
   safety:{title:'السلامة والجودة', sub:'التفتيش، الحوادث والأعطال، فروقات الأنظمة، وخدمة العملاء'},
 };
@@ -771,8 +794,16 @@ async function unzipXlsx(buf){
     p += 46+nl+el+cl;
   }
   const out = {};
+  const bin = {};   // صور مضمّنة في الإكسل (xl/media)
+  Object.defineProperty(out,'__bin',{value:bin});
   for(const f of entries){
-    if(!/\.(xml|rels)$/.test(f.name) || /drawings|charts|theme|styles/.test(f.name)) continue;
+    if(/^xl\/media\/[^/]+\.(png|jpe?g|gif|webp|bmp)$/i.test(f.name)){
+      const lnl=dv.getUint16(f.lho+26,true), lel=dv.getUint16(f.lho+28,true);
+      const start=f.lho+30+lnl+lel, data=u8.subarray(start,start+f.csize);
+      try{ bin[f.name] = f.method===0 ? data.slice() : await inflateRaw(data); }catch(e){ console.warn('img',f.name,e); }
+      continue;
+    }
+    if(!/\.(xml|rels)$/.test(f.name) || /charts|theme|styles/.test(f.name)) continue;
     const lnl=dv.getUint16(f.lho+26,true), lel=dv.getUint16(f.lho+28,true);
     const start=f.lho+30+lnl+lel, data=u8.subarray(start,start+f.csize);
     out[f.name] = td.decode(f.method===0 ? data : await inflateRaw(data));
@@ -790,14 +821,41 @@ async function readXlsx(buf){
     sst.push(Array.from(si.querySelectorAll('t')).filter(t=>!t.closest('rPh')).map(t=>t.textContent).join(''));
   });
   const book = {};
+  const IMGS = {}; Object.defineProperty(book,'__images',{value:IMGS});   // {sheetName: [{ref,row,col,src}]}
+  const _mime = n => /\.png$/i.test(n)?'image/png':/\.gif$/i.test(n)?'image/gif':/\.webp$/i.test(n)?'image/webp':/\.bmp$/i.test(n)?'image/bmp':'image/jpeg';
+  const _urlCache = {};
+  const imgUrl = path => { path=path.replace(/^\/?(xl\/)?/,'xl/').replace(/xl\/[^/]+\/\.\.\//,'xl/'); if(_urlCache[path]) return _urlCache[path]; const b=z.__bin&&z.__bin[path]; if(!b) return null; return _urlCache[path]=URL.createObjectURL(new Blob([b],{type:_mime(path)})); };
+  const relsOf = file => { const rp=file.replace(/([^/]+)$/,'_rels/$1.rels'); const m={}; if(z[rp]) parseXml(z[rp]).querySelectorAll('Relationship').forEach(r=>{ m[r.getAttribute('Id')]=r.getAttribute('Target'); }); return m; };
+  const resolve = (base,t) => { if(/^\//.test(t)) return t.slice(1); const parts=base.split('/'); parts.pop(); t.split('/').forEach(x=>{ if(x==='..') parts.pop(); else if(x!=='.') parts.push(x); }); return parts.join('/'); };
+  // صور «داخل الخلية» (Place in Cell): vm → metadata → rdrichvalue → richValueRel → media
+  let vmToImg = [];
+  try{
+    if(z['xl/metadata.xml'] && z['xl/richData/rdrichvalue.xml'] && z['xl/richData/richValueRel.xml']){
+      const md = parseXml(z['xl/metadata.xml']);
+      const fut = Array.from(md.getElementsByTagNameNS('*','futureMetadata')).find(f=>f.getAttribute('name')==='XLRICHVALUE');
+      const rvbIdx = fut ? Array.from(fut.getElementsByTagNameNS('*','bk')).map(bk=>{ const r=bk.getElementsByTagNameNS('*','rvb')[0]; return r?parseInt(r.getAttribute('i'),10):null; }) : [];
+      const vmBk = Array.from((md.getElementsByTagNameNS('*','valueMetadata')[0]||{getElementsByTagNameNS:()=>[]}).getElementsByTagNameNS('*','bk')).map(bk=>{ const rc=bk.getElementsByTagNameNS('*','rc')[0]; return rc?parseInt(rc.getAttribute('v'),10):null; });
+      let relKey = 0;
+      if(z['xl/richData/rdrichvaluestructure.xml']){ const st=parseXml(z['xl/richData/rdrichvaluestructure.xml']).getElementsByTagNameNS('*','s')[0]; if(st){ const ks=Array.from(st.getElementsByTagNameNS('*','k')).map(k=>k.getAttribute('n')); const i=ks.findIndex(n=>/LocalImageIdentifier|rvRel/i.test(n)); if(i>=0) relKey=i; } }
+      const rvs = Array.from(parseXml(z['xl/richData/rdrichvalue.xml']).getElementsByTagNameNS('*','rv')).map(rv=>{ const v=rv.getElementsByTagNameNS('*','v')[relKey]; return v?parseInt(v.textContent,10):null; });
+      const rvRels = relsOf('xl/richData/richValueRel.xml');
+      const relIds = Array.from(parseXml(z['xl/richData/richValueRel.xml']).getElementsByTagNameNS('*','rel')).map(r=>r.getAttribute('r:id')||r.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id'));
+      vmToImg = vmBk.map(fi=>{ const rv=rvbIdx[fi]; const ri=rvs[rv]; const id=relIds[ri]; const t=id&&rvRels[id]; return t?imgUrl(resolve('xl/richData/richValueRel.xml',t)):null; });
+    }
+  }catch(e){ console.warn('richData',e); }
+  const _colNum = L => L.split('').reduce((a,ch)=>a*26+ch.charCodeAt(0)-64,0);
+  const _colLet = n => { let s=''; n++; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
   wb.querySelectorAll('sheet').forEach(sh=>{
     const name = sh.getAttribute('name'), rid = sh.getAttribute('r:id') || sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id');
     let target = relMap[rid]; if(!target) return;
     target = target.replace(/^\/?(xl\/)?/,'xl/');
     if(!z[target]) return;
-    const cells = {};
-    parseXml(z[target]).querySelectorAll('c').forEach(c=>{
+    const cells = {}, imgs = [];
+    const sx = parseXml(z[target]);
+    sx.querySelectorAll('c').forEach(c=>{
       const ref = c.getAttribute('r'), t = c.getAttribute('t'), vEl = c.querySelector('v');
+      const vm = c.getAttribute('vm');
+      if(vm && vmToImg[parseInt(vm,10)-1]){ const m=/^([A-Z]+)(\d+)$/.exec(ref); imgs.push({ref, row:+m[2], col:m[1], src:vmToImg[parseInt(vm,10)-1]}); }
       let val = null;
       if(t==='inlineStr') val = Array.from(c.querySelectorAll('is t')).map(x=>x.textContent).join('');
       else if(vEl){
@@ -810,7 +868,27 @@ async function readXlsx(buf){
       }
       if(val!==null && val!=='') cells[ref] = val;
     });
+    // صور عائمة فوق الورقة (Insert → Picture)
+    try{
+      const srels = relsOf(target);
+      sx.querySelectorAll('drawing').forEach(d=>{
+        const rid=d.getAttribute('r:id')||d.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id'); const dt=srels[rid]; if(!dt) return;
+        const dpath=resolve(target,dt); if(!z[dpath]) return; const drels=relsOf(dpath);
+        const dx=parseXml(z[dpath]);
+        Array.from(dx.getElementsByTagNameNS('*','pic')).forEach(pic=>{
+          const blip=pic.getElementsByTagNameNS('*','blip')[0]; if(!blip) return;
+          const eid=blip.getAttribute('r:embed')||blip.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','embed'); const it=drels[eid]; if(!it) return;
+          const src=imgUrl(resolve(dpath,it)); if(!src) return;
+          let anc=pic.parentNode; while(anc && !/Anchor$/.test(anc.localName||'')) anc=anc.parentNode;
+          const fr=anc&&anc.getElementsByTagNameNS('*','from')[0];
+          const row=fr?parseInt(fr.getElementsByTagNameNS('*','row')[0].textContent,10)+1:1;
+          const col=fr?_colLet(parseInt(fr.getElementsByTagNameNS('*','col')[0].textContent,10)):'A';
+          imgs.push({ref:col+row, row, col, src});
+        });
+      });
+    }catch(e){ console.warn('drawing',e); }
     book[name] = cells;
+    if(imgs.length) IMGS[name] = imgs.sort((a,b)=>a.row-b.row||_colNum(a.col)-_colNum(b.col));
   });
   return book;
 }
@@ -983,6 +1061,27 @@ function applyWorkbook(book){
     INCIDENTS = {respCurr:resp(2), respPrev:resp(3), byNationality:byNat, total:{curr:t.num('E2'), prev:t.num('E3')},
       faults:{curr:t.num('B2'), prev:t.num('B3'), punctCurr:t.num('C2'), punctPrev:t.num('C3'), mechCurr:t.num('D2'), mechPrev:t.num('D3')}};
     NAT_EFF = eff;
+  });
+
+  run('الخدمات', ()=>{
+    SERVICES = [];
+    const name = Object.keys(book).find(n=>_norm(n).startsWith('الخدمات')); if(!name) return;
+    const sv = sheetOf(book, name), imgs = (book.__images||{})[name] || [];
+    const cols = _colLetters('A','Z');
+    let hr = 1, txtCols = [], imgCol = null;
+    for(let r=1;r<=5 && !txtCols.length && !imgCol;r++){
+      for(const L of cols){ const t=_norm(sv.str(L+r)); if(!t) continue; hr=r; if(/صور|صوره|الصورة|صورة/.test(t)) imgCol=L; else txtCols.push({L, h:sv.str(L+r)}); }
+    }
+    let last = hr;
+    Object.keys(book[name]).forEach(ref=>{ const m=/^[A-Z]+(\d+)$/.exec(ref); if(m) last=Math.max(last,+m[1]); });
+    imgs.forEach(im=>{ last=Math.max(last,im.row); });
+    for(let r=hr+1;r<=last;r++){
+      const texts = txtCols.map(c=>({h:c.h, v:sv.str(c.L+r)})).filter(x=>x.v);
+      const images = imgs.filter(im=>im.row===r).map(im=>im.src);
+      if(texts.length || images.length) SERVICES.push({texts, images});
+    }
+    // صور خارج الصفوف المقروءة (فوق العناوين) تُضاف كبنود مستقلة
+    imgs.filter(im=>im.row<=hr).forEach(im=>SERVICES.push({texts:[], images:[im.src]}));
   });
 
   run('تفاصيل التذاكر', ()=>{
@@ -1238,7 +1337,7 @@ function renderAllData(){
   safeRun('chartStats', renderChartStats);
   [['contractKPIs',renderContractKPIs],['ridershipKPIs',renderRidershipKPIs],['inspection',renderInspStats],['cameraTable',renderCameraTable],
    ['routesTable',renderRoutesTable],['gapTable',renderGapTable],['subsTable',renderSubsTable],['docsTable',renderDocsTable],
-   ['violations',renderViolations],['incTimes',renderIncTimes],['diesel',renderDiesel],['ticketsDetail',renderTicketsDetail],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
+   ['violations',renderViolations],['incTimes',renderIncTimes],['diesel',renderDiesel],['ticketsDetail',renderTicketsDetail],['services',renderServices],['licenseCards',renderLicenseCards],['abstractsTable',renderAbstractsTable]].forEach(([n,f])=>safeRun(n,f));
 }
 
 function showUpdMsg(html, kind, ms){
@@ -1343,6 +1442,7 @@ function initMonthly(){
   nav.addEventListener('click', e=>{
     const b = e.target.closest('.nav-item'); if(!b) return;
     setMonthlyActive(b.dataset.tab);
+    window.scrollTo({top:0, left:0, behavior:'instant'}); try{ monthlyWin().scrollTo({top:0, behavior:'instant'}); }catch(_){}
     const w = monthlyWin(); if(w && typeof w.setTab==='function') w.setTab(b.dataset.tab);
   });
   document.getElementById('modeSwitch').addEventListener('click', e=>{ const b=e.target.closest('button'); if(b) setMode(b.dataset.mode); });
@@ -1355,6 +1455,7 @@ function init(){
     btn.innerHTML = ic(NAV_ITEMS[i].icon) + `<span>${NAV_ITEMS[i].label}</span>`;
   });
   document.getElementById('navList').addEventListener('click', onNavClick);
+  document.getElementById('servicesGrid').addEventListener('click', e=>{ const b=e.target.closest('.svc-img'); if(b) openSvcImage(b.dataset.src); });
   document.getElementById('natToggle').addEventListener('click', onNatToggle);
   document.getElementById('routeSearch').addEventListener('input', onRouteSearch);
 
@@ -1525,6 +1626,7 @@ function onNavClick(e){
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('pageTitle').textContent = PAGE_TITLES[tab].title;
   document.getElementById('pageSub').textContent = PAGE_TITLES[tab].sub;
+  window.scrollTo({top:0, left:0, behavior:'instant'});   // كل تصنيف يفتح من أعلى الصفحة
   // Charts can only be measured correctly once their tab is visible (not display:none),
   // so each tab's charts are (re)built the moment it becomes active.
   buildChartsForTab(tab);
@@ -1632,6 +1734,24 @@ function renderTicketsDetail(){
   const by={}; TICKETS.forEach(t=>{ const k=t.cat||'غير مصنف'; by[k]=(by[k]||0)+1; });
   document.getElementById('bTicketsByCat').textContent = 'حسب التصنيف: ' + Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} (${v})`).join(' · ');
   document.getElementById('ticketsDetailBody').innerHTML = TICKETS.map(t=>`<tr><td><span dir="ltr" style="unicode-bidi:isolate">${esc(t.no)}</span></td><td>${esc(t.cat||'-')}</td><td>${ticketPill(t.status)}</td></tr>`).join('');
+}
+function renderServices(){
+  const box=document.getElementById('servicesGrid'); if(!box) return;
+  const empty=document.getElementById('servicesEmpty');
+  const cnt=document.getElementById('bServicesCount');
+  if(cnt) cnt.textContent = SERVICES.length ? `${SERVICES.length} ${SERVICES.length===1?'خدمة':'خدمات'}` : '';
+  empty.style.display = SERVICES.length ? 'none' : '';
+  box.innerHTML = SERVICES.map((s,i)=>`<article class="svc-card">
+      ${s.images.length?`<div class="svc-imgs${s.images.length>1?' multi':''}">${s.images.map(src=>`<button type="button" class="svc-img" data-src="${src}" aria-label="تكبير الصورة"><img src="${src}" alt="صورة الخدمة ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
+      ${s.texts.length?`<div class="svc-body">${s.texts.map(t=>`<div class="svc-text"><span class="svc-h">${esc(t.h)}</span><p>${esc(t.v).replace(/\n/g,'<br>')}</p></div>`).join('')}</div>`:''}
+    </article>`).join('');
+}
+function openSvcImage(src){
+  let lb=document.getElementById('svcLightbox');
+  if(!lb){ lb=document.createElement('div'); lb.id='svcLightbox'; lb.className='svc-lightbox'; lb.innerHTML='<button type="button" class="svc-close" aria-label="إغلاق">×</button><img alt="">';
+    lb.addEventListener('click',e=>{ if(e.target.tagName!=='IMG') lb.classList.remove('show'); }); document.body.appendChild(lb);
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') lb.classList.remove('show'); }); }
+  lb.querySelector('img').src=src; lb.classList.add('show');
 }
 function renderDiesel(){
   const sec = document.getElementById('dieselSection'); if(!sec) return;
