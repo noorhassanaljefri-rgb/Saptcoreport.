@@ -256,29 +256,44 @@
   #monthlyWrap{display:none;} body.mode-monthly #monthlyWrap{display:block;}
   body.mode-monthly .main > .topbar, body.mode-monthly .main > main.content, body.mode-monthly .main > footer{display:none;}
   #monthlyFrame{width:100%; height:100vh; border:0; display:block; background:#F7F8FA;}
-  .svc-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:16px;}
-  .svc-card.wide{grid-column:1/-1;} .svc-grid{align-items:start;}
-  .svc-card{background:var(--card); border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; min-width:0;}
-  .svc-imgs{display:grid; gap:2px; background:var(--gray-100);} .svc-imgs.multi{grid-template-columns:1fr 1fr;}
-  .svc-img{display:block; padding:0; border:0; background:none; cursor:zoom-in; width:100%;}
-  .svc-img img{display:block; width:auto; max-width:100%; height:auto; max-height:72vh; margin:0 auto; object-fit:contain; background:#fff; image-rendering:auto;}   /* بحجمها الأصلي بدون تكبير يُضعف الجودة */
-  .svc-imgs{background:#fff;}
-  .svc-media{position:relative; background:#0B1F33; display:flex; justify-content:center;}
-  .svc-media video{display:block; width:100%; max-height:78vh; background:#000;}
-  .svc-media img{display:block; max-width:100%; max-height:72vh; margin:0 auto;}
-  .svc-del{position:absolute; top:8px; inset-inline-start:8px; z-index:2; width:32px; height:32px; border-radius:50%; border:0; background:rgba(15,42,67,.72); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.75;}
+  /* ---------- الخدمات ---------- */
+  .svc-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:6px 0 14px;}
+  .svc-chips{display:flex; gap:8px; flex-wrap:wrap; flex:1;}
+  .svc-chip{display:inline-flex; align-items:center; gap:7px; background:var(--card); border:1px solid var(--gray-200); border-radius:999px; padding:6px 13px; font-size:12.5px; color:var(--gray-600,#5b6576);}
+  .svc-chip b{font-size:14px; color:var(--navy-900,#0F2A43);} .svc-chip svg{width:15px; height:15px; color:var(--gold-600,#A5772F);}
+  .svc-sec{margin-bottom:26px;} .svc-sec[hidden]{display:none;}
+  .svc-sub{display:flex; align-items:center; gap:10px; margin:0 2px 12px;}
+  .svc-sub h3{margin:0; font-size:15px; font-weight:700; color:var(--navy-900,#0F2A43); display:flex; align-items:center; gap:8px;}
+  .svc-sub h3 svg{width:18px; height:18px; color:var(--gold-600,#A5772F);}
+  .svc-sub .line{flex:1; height:1px; background:var(--gray-200);}
+  .svc-card{position:relative; background:var(--card); border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; min-width:0;}
+  .svc-feature{padding:14px; background:#fff;}
+  .svc-feature .svc-img img{display:block; width:100%; height:auto; max-height:none; border-radius:8px;}
+  .svc-thumbs{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-top:14px;}
+  .svc-thumbs .svc-img{aspect-ratio:16/10; background:#fff;} .svc-thumbs .svc-img img{width:100%; height:100%; object-fit:cover;}
+  .svc-img{display:block; padding:0; border:0; background:none; cursor:zoom-in; width:100%; position:relative;}
+  .svc-img::after{content:''; position:absolute; inset:0; background:rgba(15,42,67,0); transition:background .15s;}
+  .svc-img:hover::after{background:rgba(15,42,67,.06);}
+  .svc-cap{padding:10px 14px; font-size:12.5px; color:var(--gray-500); display:flex; gap:8px; align-items:center; border-top:1px solid var(--gray-100);}
+  .svc-cap svg{width:14px; height:14px; flex-shrink:0; color:var(--gold-600,#A5772F);}
+  .svc-cap p{margin:0; color:var(--gray-700); font-size:13.5px; line-height:1.7;}
+  .svc-videos{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,280px)); gap:16px;}
+  .svc-vid{background:#0B1F33; aspect-ratio:9/16; display:flex; align-items:center; justify-content:center;}
+  .svc-vid video{display:block; width:100%; height:100%; object-fit:contain; background:#000;}
+  .svc-notes{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px;}
+  .svc-note{padding:14px 16px; border-inline-start:3px solid var(--gold-500,#BC8E45);}
+  .svc-h{display:block; font-size:11.5px; font-weight:600; color:var(--gold-700,#8a6420); margin-bottom:4px;}
+  .svc-note p{margin:0; font-size:14px; line-height:1.8; color:var(--gray-700);}
+  .svc-del{position:absolute; top:8px; inset-inline-start:8px; z-index:2; width:32px; height:32px; border-radius:50%; border:0; background:rgba(15,42,67,.72); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.8;}
   .svc-del:hover{opacity:1; background:var(--red-500,#D6484A);} .svc-del svg{width:16px; height:16px;}
-  .svc-cap{padding:10px 14px; font-size:12.5px; color:var(--gray-500); display:flex; gap:8px; align-items:center;}
-  .svc-add{display:inline-flex; align-items:center; gap:7px; border:0; cursor:pointer; background:var(--navy-800,#153A57); color:#fff; font-family:inherit; font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; flex-shrink:0;}
+  .svc-add{display:inline-flex; align-items:center; gap:7px; border:0; cursor:pointer; background:var(--navy-800,#153A57); color:#fff; font-family:inherit; font-size:12.5px; font-weight:600; padding:9px 15px; border-radius:9px; flex-shrink:0;}
   .svc-add:hover{background:var(--navy-700,#1B4568);} .svc-add svg{width:16px; height:16px;} .svc-add:disabled{opacity:.6; cursor:wait;}
-  .svc-status{font-size:12.5px; color:var(--gray-500); margin:-4px 4px 12px; min-height:0;}
-  .svc-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px;}
-  .svc-h{display:block; font-size:11.5px; font-weight:600; color:var(--gold-700,#8a6420); margin-bottom:3px;}
-  .svc-text p{margin:0; font-size:14px; line-height:1.8; color:var(--gray-700);}
-  .svc-lightbox{display:none; position:fixed; inset:0; z-index:100; background:rgba(8,20,34,.88); align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
+  .svc-status{font-size:12.5px; color:var(--gray-500); margin:-6px 4px 12px;} .svc-status:empty{display:none;}
+  .svc-lightbox{display:none; position:fixed; inset:0; z-index:100; background:rgba(8,20,34,.9); align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
   .svc-lightbox.show{display:flex;} .svc-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.4); cursor:default;}
   .svc-close{position:absolute; top:14px; inset-inline-end:18px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.15); color:#fff; font-size:26px; line-height:1; cursor:pointer;}
-  @media (max-width:560px){ .svc-grid{grid-template-columns:1fr;} }
+  @media (max-width:560px){ .svc-head{flex-direction:column; align-items:stretch;} .svc-add{justify-content:center;} }
+  @media (max-width:560px){ .svc-videos{grid-template-columns:repeat(2,1fr); gap:10px;} .svc-thumbs{grid-template-columns:1fr 1fr; gap:10px;} .svc-feature{padding:8px;} }
   .cstat{margin:6px 0 12px;} .cstat .stat-mini .v{font-size:18px;} .cstat .stat-mini .l b{font-weight:600; color:var(--gray-700);}
 
   .gap-table{font-size:14px; border-collapse:separate; border-spacing:0;}
@@ -544,13 +559,14 @@
       </section>
       <!-- ===== TAB: SERVICES ===== -->
       <section class="tab-panel" id="tab-services">
-        <div class="section-title" style="margin-top:6px;"><h2>الخدمات</h2><span class="badge-count" id="bServicesCount"></span><div class="line"></div>
-          <button type="button" class="svc-add" id="svcAddBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="13" height="13" rx="2.2"/><path d="m16 10.5 5-3v9l-5-3"/></svg><span>إضافة فيديو</span></button>
+        <div class="svc-head">
+          <div class="svc-chips" id="svcChips"></div>
+          <button type="button" class="svc-add" id="svcAddBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>إضافة صورة أو فيديو</span></button>
           <input type="file" id="svcFile" accept="video/*,image/*" multiple hidden>
         </div>
         <div class="svc-status" id="svcStatus"></div>
-        <div class="svc-grid" id="servicesGrid"></div>
-        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات بعد — أضيفي الصور والتعليقات في ورقة «الخدمات» بالإكسل، والفيديو من زر «إضافة فيديو».</div>
+        <div id="servicesGrid"></div>
+        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات بعد — اضغطي «إضافة صورة أو فيديو»، أو أضيفي الصور والتعليقات في ورقة «الخدمات» بالإكسل.</div>
       </section>
       <!-- ===== TAB: FLEET & RESOURCES ===== -->
       <section class="tab-panel" id="tab-fleet">
@@ -1757,28 +1773,52 @@ function renderTicketsDetail(){
 }
 function renderServices(){
   const box=document.getElementById('servicesGrid'); if(!box) return;
-  const empty=document.getElementById('servicesEmpty');
-  const cnt=document.getElementById('bServicesCount');
-  const total = SERVICES.length + SERVICE_MEDIA.length;
-  if(cnt) cnt.textContent = total ? `${total} ${total===1?'عنصر':'عناصر'}` : '';
-  empty.style.display = total ? 'none' : '';
-  const trash = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+  const ic2 = d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const IC_IMG = ic2('<rect x="3" y="4.5" width="18" height="15" rx="2.2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 16-5-5-8 8.5"/>');
+  const IC_VID = ic2('<rect x="3" y="5.5" width="13" height="13" rx="2.2"/><path d="m16 10.5 5-3v9l-5-3"/>');
+  const IC_NOTE = ic2('<path d="M5 4h14v12l-4 4H5Z"/><path d="M9 9h6M9 13h4"/>');
+  const IC_CAL = ic2('<rect x="3.5" y="5" width="17" height="15.5" rx="2.2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>');
+  const trash = ic2('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>');
+  const fmtD = iso => { try{ return new Date(iso).toLocaleDateString('ar-SA-u-ca-gregory-nu-latn',{day:'numeric',month:'long'}); }catch(_){ return ''; } };
   const mediaUrl = m => API_BASE + '/api/services-media/' + encodeURIComponent(m.file);
-  const mediaCards = SERVICE_MEDIA.map(m=>{
-    const url = mediaUrl(m), isVid = /^video\//.test(m.type);
-    const d = m.addedAt ? new Date(m.addedAt) : null;
-    return `<article class="svc-card">
-      <div class="svc-media">${isVid
-        ? `<video controls playsinline preload="metadata" src="${url}#t=0.1"></video>`
-        : `<button type="button" class="svc-img" data-src="${url}" aria-label="تكبير الصورة"><img src="${url}" alt="" loading="lazy"></button>`}
-        <button type="button" class="svc-del" data-del="${esc(m.id)}" title="حذف" aria-label="حذف">${trash}</button></div>
-      <div class="svc-cap">${isVid?'فيديو':'صورة'}${d?` · أُضيف ${d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn',{day:'numeric',month:'long'})}`:''}</div>
-    </article>`;
-  }).join('');
-  box.innerHTML = SERVICES.map((s,i)=>`<article class="svc-card wide">
-      ${s.images.length?`<div class="svc-imgs${s.images.length>1?' multi':''}">${s.images.map(src=>`<button type="button" class="svc-img" data-src="${src}" aria-label="تكبير الصورة"><img src="${src}" alt="صورة الخدمة ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
-      ${s.texts.length?`<div class="svc-body">${s.texts.map(t=>`<div class="svc-text"><span class="svc-h">${esc(t.h)}</span><p>${esc(t.v).replace(/\n/g,'<br>')}</p></div>`).join('')}</div>`:''}
-    </article>`).join('') + mediaCards;
+  const up = SERVICE_MEDIA.slice().reverse();   // الأحدث أولًا
+  // الصور: المرفوعة ثم صور الإكسل (مع تعليق الصف إن وجد)
+  const photos = [
+    ...up.filter(m=>/^image\//.test(m.type)).map(m=>({src:mediaUrl(m), id:m.id, cap:'', date:m.addedAt})),
+    ...SERVICES.flatMap(s=>s.images.map(src=>({src, cap:s.texts.map(t=>t.v).join(' — ')})))
+  ];
+  const videos = up.filter(m=>/^video\//.test(m.type));
+  const notes = SERVICES.filter(s=>!s.images.length && s.texts.length);
+  const del = id => id ? `<button type="button" class="svc-del" data-del="${esc(id)}" title="حذف" aria-label="حذف">${trash}</button>` : '';
+  const cap = p => (p.cap || p.date) ? `<div class="svc-cap">${p.cap?`<p>${esc(p.cap)}</p>`:`${IC_CAL}<span>أُضيفت ${fmtD(p.date)}</span>`}</div>` : '';
+  const imgBtn = (p,cls) => `<button type="button" class="svc-img" data-src="${p.src}" aria-label="تكبير الصورة"><img src="${p.src}" alt="${esc(p.cap||'صورة من الخدمات')}" ${cls||''}></button>`;
+  let html = '';
+  if(photos.length){
+    const [first, ...rest] = photos;
+    html += `<section class="svc-sec"><div class="svc-sub"><h3>${IC_IMG}الصور</h3><span class="badge-count">${photos.length}</span><div class="line"></div></div>
+      <article class="svc-card">${del(first.id)}<div class="svc-feature">${imgBtn(first)}</div>${cap(first)}</article>
+      ${rest.length?`<div class="svc-thumbs">${rest.map(p=>`<article class="svc-card">${del(p.id)}${imgBtn(p,'loading="lazy"')}${cap(p)}</article>`).join('')}</div>`:''}
+    </section>`;
+  }
+  if(videos.length){
+    html += `<section class="svc-sec"><div class="svc-sub"><h3>${IC_VID}الفيديوهات</h3><span class="badge-count">${videos.length}</span><div class="line"></div></div>
+      <div class="svc-videos">${videos.map(m=>`<article class="svc-card">${del(m.id)}<div class="svc-vid"><video controls playsinline preload="metadata" src="${mediaUrl(m)}#t=0.1"></video></div>
+        <div class="svc-cap">${IC_CAL}<span>أُضيف ${fmtD(m.addedAt)}</span></div></article>`).join('')}</div>
+    </section>`;
+  }
+  if(notes.length){
+    html += `<section class="svc-sec"><div class="svc-sub"><h3>${IC_NOTE}ملاحظات</h3><div class="line"></div></div>
+      <div class="svc-notes">${notes.map(s=>`<article class="svc-card svc-note">${s.texts.map(t=>`<div><span class="svc-h">${esc(t.h)}</span><p>${esc(t.v).replace(/\n/g,'<br>')}</p></div>`).join('')}</article>`).join('')}</div>
+    </section>`;
+  }
+  box.innerHTML = html;
+  document.getElementById('servicesEmpty').style.display = html ? 'none' : '';
+  const last = SERVICE_MEDIA.length ? SERVICE_MEDIA[SERVICE_MEDIA.length-1].addedAt : null;
+  document.getElementById('svcChips').innerHTML = html ? [
+    `<span class="svc-chip">${IC_IMG}<b>${photos.length}</b> صورة</span>`,
+    `<span class="svc-chip">${IC_VID}<b>${videos.length}</b> فيديو</span>`,
+    last ? `<span class="svc-chip">${IC_CAL}آخر إضافة: <b>${fmtD(last)}</b></span>` : ''
+  ].join('') : '';
 }
 async function loadServiceMedia(){
   try{
