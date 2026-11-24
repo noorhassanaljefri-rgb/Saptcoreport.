@@ -6,7 +6,7 @@
 <title>ساپتكو | لوحة الأداء التشغيلي الأسبوعي</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700;800&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --navy-900:#0A1E33; --navy-800:#0F2A43; --navy-700:#153A57; --navy-600:#1D4E73; --navy-500:#2C6288;
@@ -292,49 +292,56 @@
   .svc-lightbox{display:none; position:fixed; inset:0; z-index:100; background:rgba(8,20,34,.9); align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
   .svc-lightbox.show{display:flex;} .svc-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.4); cursor:default;}
   .svc-close{position:absolute; top:14px; inset-inline-end:18px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.15); color:#fff; font-size:26px; line-height:1; cursor:pointer;}
-  /* ---------- بطاقة المبادرة: نسب مأخوذة من التصميم الأصلي (2576px) بوحدة cqw — نفس التكوين بأي عرض، ونص حقيقي حاد ---------- */
-  .ini{container-type:inline-size; position:relative; background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:26px; color:#141414;}
-  .ini::before{content:''; display:block; height:max(4px,.39cqw); background:#B5952F;}
-  .ini-in{display:grid; grid-template-columns:41.2cqw 47.9cqw; column-gap:3.4cqw; justify-content:center; padding:3.3cqw 0 3.1cqw; align-items:start;}
-  .ini-photos{margin-top:1.7cqw;}
-  .ini-brand{display:flex; align-items:center; gap:1.3cqw; justify-content:flex-start; margin-bottom:2.2cqw;}
-  .ini-brand img{height:max(30px,3.05cqw); width:auto; display:block;}
-  .ini-brand i{width:1px; align-self:stretch; background:#d4d4d4;}
-  .ini-brand b{display:block; font-size:max(13px,1.12cqw); font-weight:700; color:#1a1a1a; line-height:1.35;}
-  .ini-brand small{display:block; font-size:max(8px,.6cqw); font-weight:700; letter-spacing:.3em; color:#9A7B22; direction:ltr; text-align:right; margin-top:.35em;}
-  .ini h2{margin:0; font-size:max(26px,4.08cqw); line-height:1.02; font-weight:700; color:#141414; letter-spacing:-.005em;}
-  .ini-en{margin:.45em 0 0; font-size:max(14px,1.62cqw); font-weight:700; color:#8C6A1C; direction:ltr; text-align:right; letter-spacing:-.01em; font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;}
-  .ini-dash{display:flex; gap:.27cqw; justify-content:flex-start; margin:1.2cqw 0 2.3cqw;} .ini-dash span{height:max(2px,.2cqw); background:#B5952F; width:5cqw;} .ini-dash span:last-child{width:1cqw; background:#141414;}
-  .ini-collab{display:flex; align-items:center; gap:1cqw; margin-bottom:2.3cqw;}
-  .ini-box{flex-shrink:0; width:max(36px,3.3cqw); height:max(36px,3.3cqw); border:max(1px,.06cqw) solid #B5952F; display:flex; align-items:center; justify-content:center; color:#8C6A1C;}
-  .ini-box svg{width:50%; height:50%;}
-  .ini-collab b{display:block; font-size:max(15px,1.4cqw); font-weight:700; line-height:1.4;}
-  .ini-collab small, .ini-desc small, .ini-obj small{display:block; direction:ltr; text-align:right; color:#4d4d4d; font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;}
-  .ini-collab small{font-size:max(11px,.85cqw); margin-top:.25em;}
-  .ini-desc{border-inline-start:max(2px,.14cqw) solid #B5952F; padding-inline-start:1.3cqw; margin-bottom:2.2cqw;}
-  .ini-desc p{margin:0 0 .75em; font-size:max(14px,1.17cqw); line-height:1.75; color:#1b1b1b;}
-  .ini-desc small{font-size:max(11px,.86cqw); line-height:1.5;}
-  .ini-objh{display:flex; align-items:center; gap:.85cqw; padding-bottom:1.1cqw; border-bottom:max(1px,.07cqw) solid #222;}
-  .ini-objh b{background:#161616; color:#fff; font-size:max(12px,.86cqw); font-weight:600; padding:.55em 1em;}
-  .ini-objh small{font-size:max(8.5px,.66cqw); font-weight:700; letter-spacing:.3em; color:#9A7B22; direction:ltr;}
-  .ini-objs{display:grid; grid-template-columns:repeat(4,minmax(0,1fr));}
-  .ini-obj{padding:1.1cqw .95cqw .4cqw; border-inline-start:1px solid #dcdcdc; display:flex; flex-direction:column; align-items:flex-start;} .ini-obj:first-child{border-inline-start:0;}
-  .ini-obj .ini-box{width:max(30px,2.9cqw); height:max(30px,2.9cqw); margin-bottom:1.5cqw;}
-  .ini-obj b{font-size:max(12.5px,1.1cqw); font-weight:700; line-height:1.5;}
-  .ini-obj small{font-size:max(10px,.73cqw); line-height:1.4; margin-top:.8em;}
-  .ini-photos{display:grid; grid-template-columns:1fr 1fr; gap:.65cqw;}
+  /* ---------- بطاقة المبادرة — مطابقة لملف التصميم المرجعي (لوح 1920×1080) بوحدة cqw: 1cqw = 19.2px من المرجع؛ نص حقيقي حاد بأي دقة ---------- */
+  .ini{--g:#B18D32; --gt:#7A6020; --gi:#8A6B22; --ink:#1A1A1A; --mut:#4A4A4A; container-type:inline-size; position:relative; background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:26px; color:var(--ink); font-family:'Noto Kufi Arabic','IBM Plex Sans Arabic',sans-serif;}
+  .ini .lat{font-family:'Archivo','Segoe UI',Arial,sans-serif; direction:ltr; text-align:right;}
+  .ini::before{content:''; display:block; height:max(4px,.417cqw); background:var(--g);}
+  .ini-in{display:flex; gap:3.333cqw; padding:3.333cqw 3.75cqw; height:52.08cqw; box-sizing:border-box;}
+  .ini-text{flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between;}
+  .ini-brand{display:flex; align-items:center; gap:1.25cqw;}
+  .ini-brand img{height:3.02cqw; width:auto; display:block;}
+  .ini-brand i{width:1px; height:2.71cqw; background:#BDBDBD;}
+  .ini-brand b{display:block; font-size:1.042cqw; font-weight:700; line-height:1.5;}
+  .ini-brand small{display:block; font-size:.677cqw; font-weight:700; letter-spacing:.156cqw; color:var(--gt); margin-top:.1cqw;}
+  .ini-head{display:flex; flex-direction:column; gap:.208cqw;}
+  .ini h2{margin:0; font-size:2.917cqw; font-weight:800; line-height:1.35;}
+  .ini-en{margin:0; font-size:1.667cqw; font-weight:700; line-height:1.2; color:var(--gt); letter-spacing:-.016cqw;}
+  .ini-dash{display:flex; gap:.3125cqw; margin-top:1.042cqw;} .ini-dash span{width:5cqw; height:.26cqw; background:var(--g);} .ini-dash span:last-child{width:1.042cqw; background:var(--ink);}
+  .ini-collab{display:flex; align-items:center; gap:.9375cqw;}
+  .ini-box{flex-shrink:0; box-sizing:border-box; width:3.333cqw; height:3.333cqw; border:max(1px,.078cqw) solid var(--g); display:flex; align-items:center; justify-content:center;}
+  .ini-box svg{width:53%; height:53%;}
+  .ini-collab b{display:block; font-size:1.25cqw; font-weight:700; line-height:1.5;}
+  .ini-collab small{display:block; font-size:.885cqw; font-weight:500; color:var(--mut); margin-top:.1cqw;}
+  .ini-desc{border-right:max(2px,.156cqw) solid var(--g); padding-right:1.146cqw; display:flex; flex-direction:column; gap:.52cqw;}
+  .ini-desc p{margin:0; font-size:1.094cqw; font-weight:500; line-height:1.85;}
+  .ini-desc small{display:block; font-size:.833cqw; font-weight:500; line-height:1.5; color:var(--mut);}
+  .ini-objh{display:flex; align-items:center; gap:.729cqw; margin-bottom:.729cqw;}
+  .ini-objh b{background:var(--ink); color:#fff; font-size:.885cqw; font-weight:600; padding:.26cqw .833cqw;}
+  .ini-objh small{font-size:.677cqw; font-weight:700; letter-spacing:.156cqw; color:var(--gt);}
+  .ini-objs{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid var(--ink);}
+  .ini-obj{border-left:1px solid #D6D6D6; padding:1.042cqw .9375cqw .208cqw; display:flex; flex-direction:column; align-items:flex-start; gap:.625cqw;} .ini-obj:last-child{border-left:0;}
+  .ini-obj .ini-box{width:2.917cqw; height:2.917cqw;}
+  .ini-obj b{font-size:.99cqw; font-weight:700; line-height:1.6;}
+  .ini-obj small{display:block; align-self:stretch; font-size:.729cqw; font-weight:500; line-height:1.4; color:var(--mut);}
+  .ini-photos{width:47.917cqw; flex-shrink:0; display:flex; flex-direction:column; justify-content:center; gap:.625cqw;}
+  .ini-photos .row{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.625cqw;}
   .ini-photos .ph{position:relative; padding:0; border:0; background:#eceef1; cursor:zoom-in; overflow:hidden; display:block; width:100%;}
-  .ini-photos .ph.top{grid-column:1/-1; aspect-ratio:1840/898;} .ini-photos .ph.bot{aspect-ratio:908/800;}
+  .ini-photos .ph.top{aspect-ratio:920/449;} .ini-photos .ph.bot{aspect-ratio:454/400;}
   .ini-photos img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
   .ini-photos img:not([src]){visibility:hidden;}
-  .ini-line{grid-column:1/-1; justify-self:start; width:15.2%; height:max(3px,.25cqw); background:#B5952F; margin-top:.2cqw;}
-  .ini-q{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:#8a6420; background:rgba(255,255,255,.94); border:1px solid #ead9a6; padding:4px 10px; border-radius:20px;}
+  .ini-line{width:7.29cqw; height:.26cqw; background:var(--g); margin-top:.208cqw;}
+  .ini-q{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:#8a6420; background:rgba(255,255,255,.94); border:1px solid #ead9a6; padding:4px 10px; border-radius:20px; font-family:'IBM Plex Sans Arabic',sans-serif;}
   @container (max-width:760px){
-    .ini-in{grid-template-columns:minmax(0,1fr); padding:18px 16px 20px; row-gap:20px;}
-    .ini-photos{order:-1; margin-top:0; gap:6px;}
-    .ini-brand,.ini-collab{gap:12px;} .ini-brand{margin-bottom:14px;} .ini-dash{margin:10px 0 18px;} .ini-dash span{width:56px;} .ini-dash span:last-child{width:12px;}
-    .ini-collab,.ini-desc{margin-bottom:18px;} .ini-desc{padding-inline-start:12px;} .ini-objh{gap:10px; padding-bottom:10px;}
-    .ini-objs{grid-template-columns:1fr 1fr;} .ini-obj{padding:14px 10px 8px;} .ini-obj:nth-child(3){border-inline-start:0;} .ini-obj:nth-child(n+3){border-top:1px solid #e6e6e6;} .ini-obj .ini-box{margin-bottom:10px;}
+    .ini-in{flex-direction:column; height:auto; padding:18px 16px 20px; gap:22px;}
+    .ini-photos{order:-1; width:100%; gap:6px;} .ini-photos .row{gap:6px;} .ini-line{width:64px; height:4px;}
+    .ini-text{gap:20px;}
+    .ini-brand{gap:12px;} .ini-brand img{height:32px;} .ini-brand i{height:30px;} .ini-brand b{font-size:14px;} .ini-brand small{font-size:9px; letter-spacing:2px;}
+    .ini h2{font-size:27px;} .ini-en{font-size:16px;} .ini-dash{margin-top:10px; gap:5px;} .ini-dash span{width:60px; height:4px;} .ini-dash span:last-child{width:14px;}
+    .ini-collab{gap:12px;} .ini-box{width:44px; height:44px; border-width:1.5px;} .ini-collab b{font-size:16px;} .ini-collab small{font-size:12px;}
+    .ini-desc{border-right-width:3px; padding-right:12px; gap:8px;} .ini-desc p{font-size:15px;} .ini-desc small{font-size:12px;}
+    .ini-objh{gap:10px; margin-bottom:10px;} .ini-objh b{font-size:13px; padding:4px 12px;} .ini-objh small{font-size:9px; letter-spacing:2px;}
+    .ini-objs{grid-template-columns:1fr 1fr;} .ini-obj{padding:14px 10px 10px; gap:8px;} .ini-obj:nth-child(2){border-left:0;} .ini-obj:nth-child(n+3){border-top:1px solid #e6e6e6;} .ini-obj:nth-child(3){border-left:1px solid #D6D6D6;}
+    .ini-obj .ini-box{width:40px; height:40px;} .ini-obj b{font-size:14px;} .ini-obj small{font-size:11.5px;}
   }
   @media (max-width:560px){ .svc-head{flex-direction:column; align-items:stretch;} .svc-add{justify-content:center;} }
   @media (max-width:560px){ .svc-videos{grid-template-columns:repeat(2,1fr); gap:10px;} .svc-thumbs{grid-template-columns:1fr 1fr; gap:10px;} .svc-feature{padding:8px;} }
@@ -1822,10 +1829,10 @@ const INITIATIVE = {
   desc:'نُظِّمت مبادرة صحية للموظفين شملت الفحوصات الطبية، وفحص الأسنان، والتحاليل المخبرية؛ بهدف تعزيز صحة الموظفين ودعم الوقاية المبكرة.',
   descEn:'A health initiative was organized for employees, including medical screenings, dental checkups and laboratory tests, to promote employee wellbeing and preventive care.',
   objectives:[
-    {icon:'<path d="M12 3 5 6v5.5c0 4.3 3 7.6 7 9.5 4-1.9 7-5.2 7-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/>', t:'دعم الوقاية والكشف المبكر', en:'Support early detection & prevention'},
-    {icon:'<path d="M3 12h4l2-4.5 4 9 2.2-4.5H21"/>', t:'رفع مستوى الوعي الصحي', en:'Raise health awareness'},
-    {icon:'<circle cx="9" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.3"/><path d="M3.5 19c.5-3.2 2.8-5 5.5-5s5 1.8 5.5 5M14.5 14.3c.6-.2 1.3-.3 2-.3 2.2 0 4 1.4 4.5 4.2"/>', t:'تعزيز صحة الموظفين', en:'Enhance employee health'},
-    {icon:'<path d="M19 4C9 4 5 9 5 15c0 2 .6 3.6 1 5 1.8-6 5.5-9 9-11-3 2.4-5.4 5.8-6.4 10.4C17 19 19.5 12 19 4Z"/>', t:'تحسين جودة الحياة في بيئة العمل', en:'Improve quality of life at the workplace'},
+    {icon:'<path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>', t:'دعم الوقاية والكشف المبكر', en:'Support early detection & prevention'},
+    {icon:'<path d="M2 12h4l2.5-6 4 12 2.5-6H22"/>', t:'رفع مستوى الوعي الصحي', en:'Raise health awareness'},
+    {icon:'<circle cx="9" cy="7.5" r="3"/><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h3a4.5 4.5 0 0 1 4.5 4.5V20"/><circle cx="17" cy="8.5" r="2.3"/><path d="M17.5 14H18a3.5 3.5 0 0 1 3.5 3.5V20"/>', t:'تعزيز صحة الموظفين', en:'Enhance employee health'},
+    {icon:'<path d="M4 20C4 10 10 4 20 4c0 10-6 16-16 16z"/><path d="M4 20 13 11"/>', t:'تحسين جودة الحياة في بيئة العمل', en:'Improve quality of life at the workplace'},
   ],
   // مواضع الصور داخل التصميم الأصلي (نِسَب ثابتة من عرض/ارتفاع الصورة) — أعلى، أسفل يمين، أسفل يسار
   crops:{top:[144/3840,206/2160,1984/3840,1104/2160], botR:[1076/3840,1128/2160,1984/3840,1928/2160], botL:[144/3840,1128/2160,1052/3840,1928/2160]},
@@ -1845,24 +1852,24 @@ async function cropInitiative(src){
   return _iniCache[src]=out;
 }
 function initiativeHTML(){
-  const box=d=>`<span class="ini-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
+  const box=d=>`<span class="ini-box"><svg viewBox="0 0 24 24" fill="none" stroke="#8A6B22" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true">${d}</svg></span>`;
   const logo = (document.querySelector('.brand img')||{}).src || '';
   const I = INITIATIVE;
   return `<article class="ini" id="iniCard"><div class="ini-in">
     <div class="ini-text">
-      <div class="ini-brand">${logo?`<img src="${logo}" alt="سابتكو">`:''}<i></i><div><b>حافلات جدة</b><small>JEDDAH BUSES</small></div></div>
-      <h2>${esc(I.title)}</h2>
-      <p class="ini-en">${esc(I.en)}</p>
-      <div class="ini-dash"><span></span><span></span></div>
-      <div class="ini-collab">${box('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/><path d="M8 11.5h2l1-2 2 4 1-2h2"/>')}<div><b>${esc(I.collab)}</b><small>${esc(I.collabEn)}</small></div></div>
-      <div class="ini-desc"><p>${esc(I.desc)}</p><small>${esc(I.descEn)}</small></div>
-      <div class="ini-objh"><b>أهداف المبادرة</b><small>INITIATIVE OBJECTIVES</small></div>
-      <div class="ini-objs">${I.objectives.map(o=>`<div class="ini-obj">${box(o.icon)}<b>${esc(o.t)}</b><small>${esc(o.en)}</small></div>`).join('')}</div>
+      <div class="ini-brand">${logo?`<img src="${logo}" alt="سابتكو SAPTCO">`:''}<i></i><div><b>حافلات جدة</b><small class="lat">JEDDAH BUSES</small></div></div>
+      <div class="ini-head"><h2>${esc(I.title)}</h2><p class="ini-en lat">${esc(I.en)}</p><div class="ini-dash"><span></span><span></span></div></div>
+      <div class="ini-collab">${box('<path d="M12 20.5S3 15 3 8.8A4.8 4.8 0 0 1 12 6.5a4.8 4.8 0 0 1 9 2.3C21 15 12 20.5 12 20.5z"/><path d="M5 12h4l1.5-2.5 2 4.5 1.5-2H19"/>')}<div><b>${esc(I.collab)}</b><small class="lat">${esc(I.collabEn)}</small></div></div>
+      <div class="ini-desc"><p>${esc(I.desc)}</p><small class="lat">${esc(I.descEn)}</small></div>
+      <div><div class="ini-objh"><b>أهداف المبادرة</b><small class="lat">INITIATIVE OBJECTIVES</small></div>
+      <div class="ini-objs">${I.objectives.map(o=>`<div class="ini-obj">${box(o.icon)}<b>${esc(o.t)}</b><small class="lat">${esc(o.en)}</small></div>`).join('')}</div></div>
     </div>
     <div class="ini-photos">
       <button type="button" class="ph top svc-img" data-k="top" aria-label="تكبير الصورة"><img alt="فريق المبادرة مع عيادات أندلسية"></button>
-      <button type="button" class="ph bot svc-img" data-k="botR" aria-label="تكبير الصورة"><img alt="فحص الأسنان"></button>
-      <button type="button" class="ph bot svc-img" data-k="botL" aria-label="تكبير الصورة"><img alt="فحص طبي وتحاليل"></button>
+      <div class="row">
+        <button type="button" class="ph bot svc-img" data-k="botR" aria-label="تكبير الصورة"><img alt="فحص الأسنان"></button>
+        <button type="button" class="ph bot svc-img" data-k="botL" aria-label="تكبير الصورة"><img alt="التحاليل المخبرية"></button>
+      </div>
       <span class="ini-line"></span>
     </div>
   </div><span class="ini-q" id="iniQ" hidden></span></article>`;
@@ -1874,7 +1881,7 @@ async function fillInitiative(srcs){
   const card=document.getElementById('iniCard'); if(!card || !best) return;
   card.querySelectorAll('.ph').forEach(b=>{ const u=best[b.dataset.k]; b.dataset.src=u; b.querySelector('img').src=u; });
   const q=document.getElementById('iniQ');
-  if(best.w<2000){ q.hidden=false; q.textContent='تُعرض الصور الآن من نسخة الإكسل — ارفعي الصورة الأصلية لأعلى دقة'; } else q.hidden=true;
+  q.hidden=true;
 }
 function renderServices(){
   const box=document.getElementById('servicesGrid'); if(!box) return;
