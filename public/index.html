@@ -292,6 +292,50 @@
   .svc-lightbox{display:none; position:fixed; inset:0; z-index:100; background:rgba(8,20,34,.9); align-items:center; justify-content:center; padding:24px; cursor:zoom-out;}
   .svc-lightbox.show{display:flex;} .svc-lightbox img{max-width:100%; max-height:100%; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,.4); cursor:default;}
   .svc-close{position:absolute; top:14px; inset-inline-end:18px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.15); color:#fff; font-size:26px; line-height:1; cursor:pointer;}
+  /* ---------- بطاقة المبادرة: نسب مأخوذة من التصميم الأصلي (2576px) بوحدة cqw — نفس التكوين بأي عرض، ونص حقيقي حاد ---------- */
+  .ini{container-type:inline-size; position:relative; background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-bottom:26px; color:#141414;}
+  .ini::before{content:''; display:block; height:max(4px,.39cqw); background:#B5952F;}
+  .ini-in{display:grid; grid-template-columns:41.2cqw 47.9cqw; column-gap:3.4cqw; justify-content:center; padding:3.3cqw 0 3.1cqw; align-items:start;}
+  .ini-photos{margin-top:1.7cqw;}
+  .ini-brand{display:flex; align-items:center; gap:1.3cqw; justify-content:flex-start; margin-bottom:2.2cqw;}
+  .ini-brand img{height:max(30px,3.05cqw); width:auto; display:block;}
+  .ini-brand i{width:1px; align-self:stretch; background:#d4d4d4;}
+  .ini-brand b{display:block; font-size:max(13px,1.12cqw); font-weight:700; color:#1a1a1a; line-height:1.35;}
+  .ini-brand small{display:block; font-size:max(8px,.6cqw); font-weight:700; letter-spacing:.3em; color:#9A7B22; direction:ltr; text-align:right; margin-top:.35em;}
+  .ini h2{margin:0; font-size:max(26px,4.08cqw); line-height:1.02; font-weight:700; color:#141414; letter-spacing:-.005em;}
+  .ini-en{margin:.45em 0 0; font-size:max(14px,1.62cqw); font-weight:700; color:#8C6A1C; direction:ltr; text-align:right; letter-spacing:-.01em; font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;}
+  .ini-dash{display:flex; gap:.27cqw; justify-content:flex-start; margin:1.2cqw 0 2.3cqw;} .ini-dash span{height:max(2px,.2cqw); background:#B5952F; width:5cqw;} .ini-dash span:last-child{width:1cqw; background:#141414;}
+  .ini-collab{display:flex; align-items:center; gap:1cqw; margin-bottom:2.3cqw;}
+  .ini-box{flex-shrink:0; width:max(36px,3.3cqw); height:max(36px,3.3cqw); border:max(1px,.06cqw) solid #B5952F; display:flex; align-items:center; justify-content:center; color:#8C6A1C;}
+  .ini-box svg{width:50%; height:50%;}
+  .ini-collab b{display:block; font-size:max(15px,1.4cqw); font-weight:700; line-height:1.4;}
+  .ini-collab small, .ini-desc small, .ini-obj small{display:block; direction:ltr; text-align:right; color:#4d4d4d; font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;}
+  .ini-collab small{font-size:max(11px,.85cqw); margin-top:.25em;}
+  .ini-desc{border-inline-start:max(2px,.14cqw) solid #B5952F; padding-inline-start:1.3cqw; margin-bottom:2.2cqw;}
+  .ini-desc p{margin:0 0 .75em; font-size:max(14px,1.17cqw); line-height:1.75; color:#1b1b1b;}
+  .ini-desc small{font-size:max(11px,.86cqw); line-height:1.5;}
+  .ini-objh{display:flex; align-items:center; gap:.85cqw; padding-bottom:1.1cqw; border-bottom:max(1px,.07cqw) solid #222;}
+  .ini-objh b{background:#161616; color:#fff; font-size:max(12px,.86cqw); font-weight:600; padding:.55em 1em;}
+  .ini-objh small{font-size:max(8.5px,.66cqw); font-weight:700; letter-spacing:.3em; color:#9A7B22; direction:ltr;}
+  .ini-objs{display:grid; grid-template-columns:repeat(4,minmax(0,1fr));}
+  .ini-obj{padding:1.1cqw .95cqw .4cqw; border-inline-start:1px solid #dcdcdc; display:flex; flex-direction:column; align-items:flex-start;} .ini-obj:first-child{border-inline-start:0;}
+  .ini-obj .ini-box{width:max(30px,2.9cqw); height:max(30px,2.9cqw); margin-bottom:1.5cqw;}
+  .ini-obj b{font-size:max(12.5px,1.1cqw); font-weight:700; line-height:1.5;}
+  .ini-obj small{font-size:max(10px,.73cqw); line-height:1.4; margin-top:.8em;}
+  .ini-photos{display:grid; grid-template-columns:1fr 1fr; gap:.65cqw;}
+  .ini-photos .ph{position:relative; padding:0; border:0; background:#eceef1; cursor:zoom-in; overflow:hidden; display:block; width:100%;}
+  .ini-photos .ph.top{grid-column:1/-1; aspect-ratio:1840/898;} .ini-photos .ph.bot{aspect-ratio:908/800;}
+  .ini-photos img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .ini-photos img:not([src]){visibility:hidden;}
+  .ini-line{grid-column:1/-1; justify-self:start; width:15.2%; height:max(3px,.25cqw); background:#B5952F; margin-top:.2cqw;}
+  .ini-q{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:#8a6420; background:rgba(255,255,255,.94); border:1px solid #ead9a6; padding:4px 10px; border-radius:20px;}
+  @container (max-width:760px){
+    .ini-in{grid-template-columns:minmax(0,1fr); padding:18px 16px 20px; row-gap:20px;}
+    .ini-photos{order:-1; margin-top:0; gap:6px;}
+    .ini-brand,.ini-collab{gap:12px;} .ini-brand{margin-bottom:14px;} .ini-dash{margin:10px 0 18px;} .ini-dash span{width:56px;} .ini-dash span:last-child{width:12px;}
+    .ini-collab,.ini-desc{margin-bottom:18px;} .ini-desc{padding-inline-start:12px;} .ini-objh{gap:10px; padding-bottom:10px;}
+    .ini-objs{grid-template-columns:1fr 1fr;} .ini-obj{padding:14px 10px 8px;} .ini-obj:nth-child(3){border-inline-start:0;} .ini-obj:nth-child(n+3){border-top:1px solid #e6e6e6;} .ini-obj .ini-box{margin-bottom:10px;}
+  }
   @media (max-width:560px){ .svc-head{flex-direction:column; align-items:stretch;} .svc-add{justify-content:center;} }
   @media (max-width:560px){ .svc-videos{grid-template-columns:repeat(2,1fr); gap:10px;} .svc-thumbs{grid-template-columns:1fr 1fr; gap:10px;} .svc-feature{padding:8px;} }
   .cstat{margin:6px 0 12px;} .cstat .stat-mini .v{font-size:18px;} .cstat .stat-mini .l b{font-weight:600; color:var(--gray-700);}
@@ -1771,6 +1815,67 @@ function renderTicketsDetail(){
   document.getElementById('bTicketsByCat').textContent = 'حسب التصنيف: ' + Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${k} (${v})`).join(' · ');
   document.getElementById('ticketsDetailBody').innerHTML = TICKETS.map(t=>`<tr><td><span dir="ltr" style="unicode-bidi:isolate">${esc(t.no)}</span></td><td>${esc(t.cat||'-')}</td><td>${ticketPill(t.status)}</td></tr>`).join('');
 }
+/* مبادرة الرعاية الصحية — التصميم يُبنى بنص حقيقي (حاد بأي دقة)، والصور تُقص بدقتها الأصلية من الصورة المرفوعة */
+const INITIATIVE = {
+  title:'مبادرة الرعاية الصحية للموظفين', en:'Employee Health & Wellness Initiative',
+  collab:'بالتعاون مع عيادات أندلسية', collabEn:'In collaboration with Andalusia Clinics',
+  desc:'نُظِّمت مبادرة صحية للموظفين شملت الفحوصات الطبية، وفحص الأسنان، والتحاليل المخبرية؛ بهدف تعزيز صحة الموظفين ودعم الوقاية المبكرة.',
+  descEn:'A health initiative was organized for employees, including medical screenings, dental checkups and laboratory tests, to promote employee wellbeing and preventive care.',
+  objectives:[
+    {icon:'<path d="M12 3 5 6v5.5c0 4.3 3 7.6 7 9.5 4-1.9 7-5.2 7-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/>', t:'دعم الوقاية والكشف المبكر', en:'Support early detection & prevention'},
+    {icon:'<path d="M3 12h4l2-4.5 4 9 2.2-4.5H21"/>', t:'رفع مستوى الوعي الصحي', en:'Raise health awareness'},
+    {icon:'<circle cx="9" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.3"/><path d="M3.5 19c.5-3.2 2.8-5 5.5-5s5 1.8 5.5 5M14.5 14.3c.6-.2 1.3-.3 2-.3 2.2 0 4 1.4 4.5 4.2"/>', t:'تعزيز صحة الموظفين', en:'Enhance employee health'},
+    {icon:'<path d="M19 4C9 4 5 9 5 15c0 2 .6 3.6 1 5 1.8-6 5.5-9 9-11-3 2.4-5.4 5.8-6.4 10.4C17 19 19.5 12 19 4Z"/>', t:'تحسين جودة الحياة في بيئة العمل', en:'Improve quality of life at the workplace'},
+  ],
+  // مواضع الصور داخل التصميم الأصلي (نِسَب ثابتة من عرض/ارتفاع الصورة) — أعلى، أسفل يمين، أسفل يسار
+  crops:{top:[144/3840,206/2160,1984/3840,1104/2160], botR:[1076/3840,1128/2160,1984/3840,1928/2160], botL:[144/3840,1128/2160,1052/3840,1928/2160]},
+  match:/مبادر|initiative|رعاية|health/i,
+};
+const _iniCache = {};   // src → {top,botR,botL, w}
+function _loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
+async function cropInitiative(src){
+  if(_iniCache[src]) return _iniCache[src];
+  const im = await _loadImg(src), W=im.naturalWidth, H=im.naturalHeight, out={w:W};
+  for(const [k,[x0,y0,x1,y1]] of Object.entries(INITIATIVE.crops)){
+    const sx=Math.round(x0*W), sy=Math.round(y0*H), sw=Math.round((x1-x0)*W), sh=Math.round((y1-y0)*H);
+    const c=document.createElement('canvas'); c.width=sw; c.height=sh;
+    const g=c.getContext('2d'); g.imageSmoothingEnabled=false; g.drawImage(im,sx,sy,sw,sh,0,0,sw,sh);   // قص بدون أي تحجيم = نفس دقة الأصل
+    out[k] = await new Promise(r=>c.toBlob(b=>r(URL.createObjectURL(b)),'image/png'));
+  }
+  return _iniCache[src]=out;
+}
+function initiativeHTML(){
+  const box=d=>`<span class="ini-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${d}</svg></span>`;
+  const logo = (document.querySelector('.brand img')||{}).src || '';
+  const I = INITIATIVE;
+  return `<article class="ini" id="iniCard"><div class="ini-in">
+    <div class="ini-text">
+      <div class="ini-brand">${logo?`<img src="${logo}" alt="سابتكو">`:''}<i></i><div><b>حافلات جدة</b><small>JEDDAH BUSES</small></div></div>
+      <h2>${esc(I.title)}</h2>
+      <p class="ini-en">${esc(I.en)}</p>
+      <div class="ini-dash"><span></span><span></span></div>
+      <div class="ini-collab">${box('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/><path d="M8 11.5h2l1-2 2 4 1-2h2"/>')}<div><b>${esc(I.collab)}</b><small>${esc(I.collabEn)}</small></div></div>
+      <div class="ini-desc"><p>${esc(I.desc)}</p><small>${esc(I.descEn)}</small></div>
+      <div class="ini-objh"><b>أهداف المبادرة</b><small>INITIATIVE OBJECTIVES</small></div>
+      <div class="ini-objs">${I.objectives.map(o=>`<div class="ini-obj">${box(o.icon)}<b>${esc(o.t)}</b><small>${esc(o.en)}</small></div>`).join('')}</div>
+    </div>
+    <div class="ini-photos">
+      <button type="button" class="ph top svc-img" data-k="top" aria-label="تكبير الصورة"><img alt="فريق المبادرة مع عيادات أندلسية"></button>
+      <button type="button" class="ph bot svc-img" data-k="botR" aria-label="تكبير الصورة"><img alt="فحص الأسنان"></button>
+      <button type="button" class="ph bot svc-img" data-k="botL" aria-label="تكبير الصورة"><img alt="فحص طبي وتحاليل"></button>
+      <span class="ini-line"></span>
+    </div>
+  </div><span class="ini-q" id="iniQ" hidden></span></article>`;
+}
+async function fillInitiative(srcs){
+  // أعلى دقة متاحة: نجرب كل المصادر ونأخذ الأعرض
+  let best=null;
+  for(const src of srcs){ try{ const c=await cropInitiative(src); if(!best || c.w>best.w) best=c; }catch(e){ console.warn('ini',e); } }
+  const card=document.getElementById('iniCard'); if(!card || !best) return;
+  card.querySelectorAll('.ph').forEach(b=>{ const u=best[b.dataset.k]; b.dataset.src=u; b.querySelector('img').src=u; });
+  const q=document.getElementById('iniQ');
+  if(best.w<2000){ q.hidden=false; q.textContent='تُعرض الصور الآن من نسخة الإكسل — ارفعي الصورة الأصلية لأعلى دقة'; } else q.hidden=true;
+}
 function renderServices(){
   const box=document.getElementById('servicesGrid'); if(!box) return;
   const ic2 = d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -1783,16 +1888,20 @@ function renderServices(){
   const mediaUrl = m => API_BASE + '/api/services-media/' + encodeURIComponent(m.file);
   const up = SERVICE_MEDIA.slice().reverse();   // الأحدث أولًا
   // الصور: المرفوعة ثم صور الإكسل (مع تعليق الصف إن وجد)
-  const photos = [
-    ...up.filter(m=>/^image\//.test(m.type)).map(m=>({src:mediaUrl(m), id:m.id, cap:'', date:m.addedAt})),
-    ...SERVICES.flatMap(s=>s.images.map(src=>({src, cap:s.texts.map(t=>t.v).join(' — ')})))
+  let photos = [
+    ...up.filter(m=>/^image\//.test(m.type)).map(m=>({src:mediaUrl(m), id:m.id, cap:'', date:m.addedAt, name:m.name||''})),
+    ...SERVICES.flatMap(s=>s.images.map(src=>({src, cap:s.texts.map(t=>t.v).join(' — '), excel:true})))
   ];
+  // صور تصميم المبادرة: نسخة الإكسل + أي صورة مرفوعة باسم المبادرة → تُعرض داخل البطاقة بدل تكرارها في المعرض
+  const iniSrcs = photos.filter(p=>p.excel || INITIATIVE.match.test(p.name||'')).map(p=>p.src);
+  const iniIds = photos.filter(p=>!p.excel && INITIATIVE.match.test(p.name||'')).map(p=>p.id);
+  if(iniSrcs.length) photos = photos.filter(p=>!(p.excel || INITIATIVE.match.test(p.name||'')));
   const videos = up.filter(m=>/^video\//.test(m.type));
   const notes = SERVICES.filter(s=>!s.images.length && s.texts.length);
   const del = id => id ? `<button type="button" class="svc-del" data-del="${esc(id)}" title="حذف" aria-label="حذف">${trash}</button>` : '';
   const cap = p => (p.cap || p.date) ? `<div class="svc-cap">${p.cap?`<p>${esc(p.cap)}</p>`:`${IC_CAL}<span>أُضيفت ${fmtD(p.date)}</span>`}</div>` : '';
   const imgBtn = (p,cls) => `<button type="button" class="svc-img" data-src="${p.src}" aria-label="تكبير الصورة"><img src="${p.src}" alt="${esc(p.cap||'صورة من الخدمات')}" ${cls||''}></button>`;
-  let html = '';
+  let html = iniSrcs.length ? initiativeHTML() : '';
   if(photos.length){
     const [first, ...rest] = photos;
     html += `<section class="svc-sec"><div class="svc-sub"><h3>${IC_IMG}الصور</h3><span class="badge-count">${photos.length}</span><div class="line"></div></div>
@@ -1812,10 +1921,11 @@ function renderServices(){
     </section>`;
   }
   box.innerHTML = html;
+  if(iniSrcs.length){ fillInitiative(iniSrcs); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
   document.getElementById('servicesEmpty').style.display = html ? 'none' : '';
   const last = SERVICE_MEDIA.length ? SERVICE_MEDIA[SERVICE_MEDIA.length-1].addedAt : null;
   document.getElementById('svcChips').innerHTML = html ? [
-    `<span class="svc-chip">${IC_IMG}<b>${photos.length}</b> صورة</span>`,
+    `<span class="svc-chip">${IC_IMG}<b>${photos.length + (iniSrcs.length?3:0)}</b> صورة</span>`,
     `<span class="svc-chip">${IC_VID}<b>${videos.length}</b> فيديو</span>`,
     last ? `<span class="svc-chip">${IC_CAL}آخر إضافة: <b>${fmtD(last)}</b></span>` : ''
   ].join('') : '';
