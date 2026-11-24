@@ -257,10 +257,21 @@
   body.mode-monthly .main > .topbar, body.mode-monthly .main > main.content, body.mode-monthly .main > footer{display:none;}
   #monthlyFrame{width:100%; height:100vh; border:0; display:block; background:#F7F8FA;}
   .svc-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:16px;}
+  .svc-card.wide{grid-column:1/-1;} .svc-grid{align-items:start;}
   .svc-card{background:var(--card); border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; min-width:0;}
   .svc-imgs{display:grid; gap:2px; background:var(--gray-100);} .svc-imgs.multi{grid-template-columns:1fr 1fr;}
   .svc-img{display:block; padding:0; border:0; background:none; cursor:zoom-in; width:100%;}
-  .svc-img img{display:block; width:100%; height:auto; max-height:72vh; object-fit:contain; background:#fff;}
+  .svc-img img{display:block; width:auto; max-width:100%; height:auto; max-height:72vh; margin:0 auto; object-fit:contain; background:#fff; image-rendering:auto;}   /* بحجمها الأصلي بدون تكبير يُضعف الجودة */
+  .svc-imgs{background:#fff;}
+  .svc-media{position:relative; background:#0B1F33; display:flex; justify-content:center;}
+  .svc-media video{display:block; width:100%; max-height:78vh; background:#000;}
+  .svc-media img{display:block; max-width:100%; max-height:72vh; margin:0 auto;}
+  .svc-del{position:absolute; top:8px; inset-inline-start:8px; z-index:2; width:32px; height:32px; border-radius:50%; border:0; background:rgba(15,42,67,.72); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.75;}
+  .svc-del:hover{opacity:1; background:var(--red-500,#D6484A);} .svc-del svg{width:16px; height:16px;}
+  .svc-cap{padding:10px 14px; font-size:12.5px; color:var(--gray-500); display:flex; gap:8px; align-items:center;}
+  .svc-add{display:inline-flex; align-items:center; gap:7px; border:0; cursor:pointer; background:var(--navy-800,#153A57); color:#fff; font-family:inherit; font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:9px; flex-shrink:0;}
+  .svc-add:hover{background:var(--navy-700,#1B4568);} .svc-add svg{width:16px; height:16px;} .svc-add:disabled{opacity:.6; cursor:wait;}
+  .svc-status{font-size:12.5px; color:var(--gray-500); margin:-4px 4px 12px; min-height:0;}
   .svc-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px;}
   .svc-h{display:block; font-size:11.5px; font-weight:600; color:var(--gold-700,#8a6420); margin-bottom:3px;}
   .svc-text p{margin:0; font-size:14px; line-height:1.8; color:var(--gray-700);}
@@ -533,9 +544,13 @@
       </section>
       <!-- ===== TAB: SERVICES ===== -->
       <section class="tab-panel" id="tab-services">
-        <div class="section-title" style="margin-top:6px;"><h2>الخدمات</h2><span class="badge-count" id="bServicesCount"></span><div class="line"></div></div>
+        <div class="section-title" style="margin-top:6px;"><h2>الخدمات</h2><span class="badge-count" id="bServicesCount"></span><div class="line"></div>
+          <button type="button" class="svc-add" id="svcAddBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="13" height="13" rx="2.2"/><path d="m16 10.5 5-3v9l-5-3"/></svg><span>إضافة فيديو</span></button>
+          <input type="file" id="svcFile" accept="video/*,image/*" multiple hidden>
+        </div>
+        <div class="svc-status" id="svcStatus"></div>
         <div class="svc-grid" id="servicesGrid"></div>
-        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات في ملف الإكسل — أضيفيها في ورقة «الخدمات» (عمود التعليق وعمود الصور).</div>
+        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات بعد — أضيفي الصور والتعليقات في ورقة «الخدمات» بالإكسل، والفيديو من زر «إضافة فيديو».</div>
       </section>
       <!-- ===== TAB: FLEET & RESOURCES ===== -->
       <section class="tab-panel" id="tab-fleet">
@@ -730,6 +745,7 @@ let CUSTOMER = {curr:{}, prev:{}};
 let INC_TIMES = null;   // الأعطال والحوادث حسب الأوقات (جدول «الأوقات» في ورقة الحوادث)
 let INC_LIST = null;    // تفاصيل كل عطل/حادث (رقم الحافلة + الوقت) عند استخدام الشكل الجديد
 let DIESEL = [];   // فروقات الديزل من «موارد المشروع» (جدول بعنوان «فروقات الديزل»)
+let SERVICE_MEDIA = [];  // فيديوهات/صور مرفوعة على الخادم لقسم الخدمات
 let SERVICES = [];  // الخدمات: [{text, images:[src]}] من ورقة «الخدمات»
 let TICKETS = [];   // تفاصيل تذاكر خدمة العملاء (رقم البطاقة / التصنيف / الحالة)
 let SEPT_ROUTE_TOTAL = {total:0, routes:[]};   // الإركاب التراكمي لكل مسار
@@ -1455,7 +1471,10 @@ function init(){
     btn.innerHTML = ic(NAV_ITEMS[i].icon) + `<span>${NAV_ITEMS[i].label}</span>`;
   });
   document.getElementById('navList').addEventListener('click', onNavClick);
-  document.getElementById('servicesGrid').addEventListener('click', e=>{ const b=e.target.closest('.svc-img'); if(b) openSvcImage(b.dataset.src); });
+  document.getElementById('servicesGrid').addEventListener('click', e=>{ const d=e.target.closest('.svc-del'); if(d){ deleteServiceMedia(d.dataset.del); return; } const b=e.target.closest('.svc-img'); if(b) openSvcImage(b.dataset.src); });
+  document.getElementById('svcAddBtn').addEventListener('click', ()=>document.getElementById('svcFile').click());
+  document.getElementById('svcFile').addEventListener('change', e=>onSvcFiles(e.target.files));
+  loadServiceMedia();
   document.getElementById('natToggle').addEventListener('click', onNatToggle);
   document.getElementById('routeSearch').addEventListener('input', onRouteSearch);
 
@@ -1505,6 +1524,7 @@ async function applyShared(){
 /* تحديث تلقائي: كل دقيقة نتحقق إن كان هناك ملف أحدث على الخادم ونعيد رسم اللوحة */
 setInterval(async()=>{
   if(document.hidden) return;
+  loadServiceMedia();
   if(window.__pendingUpload){ await retryPending(); return; }   // تحديث على هذا الجهاز لم يصل للخادم → نعيد رفعه حتى يصل للجميع
   if(await applyShared()){
     renderAllData();
@@ -1739,12 +1759,61 @@ function renderServices(){
   const box=document.getElementById('servicesGrid'); if(!box) return;
   const empty=document.getElementById('servicesEmpty');
   const cnt=document.getElementById('bServicesCount');
-  if(cnt) cnt.textContent = SERVICES.length ? `${SERVICES.length} ${SERVICES.length===1?'خدمة':'خدمات'}` : '';
-  empty.style.display = SERVICES.length ? 'none' : '';
-  box.innerHTML = SERVICES.map((s,i)=>`<article class="svc-card">
+  const total = SERVICES.length + SERVICE_MEDIA.length;
+  if(cnt) cnt.textContent = total ? `${total} ${total===1?'عنصر':'عناصر'}` : '';
+  empty.style.display = total ? 'none' : '';
+  const trash = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+  const mediaUrl = m => API_BASE + '/api/services-media/' + encodeURIComponent(m.file);
+  const mediaCards = SERVICE_MEDIA.map(m=>{
+    const url = mediaUrl(m), isVid = /^video\//.test(m.type);
+    const d = m.addedAt ? new Date(m.addedAt) : null;
+    return `<article class="svc-card">
+      <div class="svc-media">${isVid
+        ? `<video controls playsinline preload="metadata" src="${url}#t=0.1"></video>`
+        : `<button type="button" class="svc-img" data-src="${url}" aria-label="تكبير الصورة"><img src="${url}" alt="" loading="lazy"></button>`}
+        <button type="button" class="svc-del" data-del="${esc(m.id)}" title="حذف" aria-label="حذف">${trash}</button></div>
+      <div class="svc-cap">${isVid?'فيديو':'صورة'}${d?` · أُضيف ${d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn',{day:'numeric',month:'long'})}`:''}</div>
+    </article>`;
+  }).join('');
+  box.innerHTML = SERVICES.map((s,i)=>`<article class="svc-card wide">
       ${s.images.length?`<div class="svc-imgs${s.images.length>1?' multi':''}">${s.images.map(src=>`<button type="button" class="svc-img" data-src="${src}" aria-label="تكبير الصورة"><img src="${src}" alt="صورة الخدمة ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
       ${s.texts.length?`<div class="svc-body">${s.texts.map(t=>`<div class="svc-text"><span class="svc-h">${esc(t.h)}</span><p>${esc(t.v).replace(/\n/g,'<br>')}</p></div>`).join('')}</div>`:''}
-    </article>`).join('');
+    </article>`).join('') + mediaCards;
+}
+async function loadServiceMedia(){
+  try{
+    const r = await fetch(API_BASE+'/api/services-media?_='+Date.now(), {cache:'no-store'}); if(!r.ok) return false;
+    const items = ((await r.json()).items)||[];
+    const changed = JSON.stringify(items.map(x=>x.id)) !== JSON.stringify(SERVICE_MEDIA.map(x=>x.id));
+    SERVICE_MEDIA = items; if(changed) safeRun('services', renderServices); return changed;
+  }catch(e){ console.warn('media',e); return false; }
+}
+function uploadServiceMedia(file){
+  return new Promise((resolve,reject)=>{
+    const x = new XMLHttpRequest();
+    x.open('POST', API_BASE+'/api/services-media');
+    x.setRequestHeader('x-file-name', encodeURIComponent(file.name));
+    x.upload.onprogress = e=>{ if(e.lengthComputable) document.getElementById('svcStatus').textContent = `جاري رفع «${file.name}» — ${Math.round(e.loaded/e.total*100)}%`; };
+    x.onload = ()=>{ let j={}; try{ j=JSON.parse(x.responseText); }catch(_){} x.status===200 ? resolve(j) : reject(new Error(j.error||('فشل الرفع ('+x.status+')'))); };
+    x.onerror = ()=>reject(new Error('انقطع الاتصال أثناء الرفع'));
+    x.send(file);
+  });
+}
+async function onSvcFiles(files){
+  const btn = document.getElementById('svcAddBtn'), st = document.getElementById('svcStatus');
+  files = Array.from(files||[]); if(!files.length) return;
+  btn.disabled = true;
+  try{
+    for(const f of files){ await uploadServiceMedia(f); }
+    st.textContent = `✔ تمت إضافة ${files.length===1?'الملف':files.length+' ملفات'} — يظهر الآن لكل من يفتح اللوحة.`;
+    await loadServiceMedia();
+  }catch(e){ st.textContent = '⚠ ' + (e.message||e); }
+  finally{ btn.disabled = false; document.getElementById('svcFile').value=''; setTimeout(()=>{ if(/^✔/.test(st.textContent)) st.textContent=''; }, 9000); }
+}
+async function deleteServiceMedia(id){
+  if(!confirm('حذف هذا الملف من قسم الخدمات عند الجميع؟')) return;
+  try{ const r = await fetch(API_BASE+'/api/services-media?delete='+encodeURIComponent(id), {method:'POST'}); if(!r.ok) throw new Error('تعذّر الحذف'); await loadServiceMedia(); }
+  catch(e){ document.getElementById('svcStatus').textContent = '⚠ ' + (e.message||e); }
 }
 function openSvcImage(src){
   let lb=document.getElementById('svcLightbox');
