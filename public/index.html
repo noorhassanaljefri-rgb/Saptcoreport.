@@ -614,12 +614,10 @@
       <section class="tab-panel" id="tab-services">
         <div class="svc-head">
           <div class="svc-chips" id="svcChips"></div>
-          <button type="button" class="svc-add" id="svcAddBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>إضافة صورة أو فيديو</span></button>
-          <input type="file" id="svcFile" accept="video/*,image/*" multiple hidden>
         </div>
         <div class="svc-status" id="svcStatus"></div>
         <div id="servicesGrid"></div>
-        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات بعد — اضغطي «إضافة صورة أو فيديو»، أو أضيفي الصور والتعليقات في ورقة «الخدمات» بالإكسل.</div>
+        <div class="section-note" id="servicesEmpty" style="margin:8px 4px;">لا توجد خدمات بعد — أضيفي الصور والتعليقات في ورقة «الخدمات» بالإكسل.</div>
       </section>
       <!-- ===== TAB: FLEET & RESOURCES ===== -->
       <section class="tab-panel" id="tab-fleet">
@@ -1541,8 +1539,6 @@ function init(){
   });
   document.getElementById('navList').addEventListener('click', onNavClick);
   document.getElementById('servicesGrid').addEventListener('click', e=>{ const d=e.target.closest('.svc-del'); if(d){ deleteServiceMedia(d.dataset.del); return; } const b=e.target.closest('.svc-img'); if(b) openSvcImage(b.dataset.src); });
-  document.getElementById('svcAddBtn').addEventListener('click', ()=>document.getElementById('svcFile').click());
-  document.getElementById('svcFile').addEventListener('change', e=>onSvcFiles(e.target.files));
   loadServiceMedia();
   document.getElementById('natToggle').addEventListener('click', onNatToggle);
   document.getElementById('routeSearch').addEventListener('input', onRouteSearch);
@@ -1946,11 +1942,9 @@ function renderServices(){
   box.innerHTML = html;
   if(iniSrcs.length){ fillInitiative(iniSrcs, eyeP && eyeP.src, Object.fromEntries(Object.entries(slotPs).map(([k,p])=>[k,p.src]))); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
   document.getElementById('servicesEmpty').style.display = html ? 'none' : '';
-  const last = SERVICE_MEDIA.length ? SERVICE_MEDIA[SERVICE_MEDIA.length-1].addedAt : null;
   document.getElementById('svcChips').innerHTML = html ? [
     `<span class="svc-chip">${IC_IMG}<b>${photos.length + (iniSrcs.length?(eyeP?4:3):0)}</b> صورة</span>`,
-    `<span class="svc-chip">${IC_VID}<b>${videos.length}</b> فيديو</span>`,
-    last ? `<span class="svc-chip">${IC_CAL}آخر إضافة: <b>${fmtD(last)}</b></span>` : ''
+    `<span class="svc-chip">${IC_VID}<b>${videos.length}</b> فيديو</span>`
   ].join('') : '';
 }
 async function loadServiceMedia(){
