@@ -1841,6 +1841,7 @@ const INITIATIVE = {
   crops:{top:[144/3840,206/2160,1984/3840,1104/2160], botR:[1076/3840,1128/2160,1984/3840,1928/2160], botL:[144/3840,1128/2160,1052/3840,1928/2160]},
   match:/مبادر|initiative|رعاية|health/i,
   eyeMatch:/نظر|عيون|eye|optic|رؤى|رؤية/i,   // صورة فحص النظر تُرفع من زر «إضافة صورة أو فيديو» باسم فيه «النظر»
+  slotMatch:{top:/فريق|team/i, botR:/اسنان|أسنان|dental/i, botL:/تحاليل|lab/i},   // صور جاهزة لكل خانة (لها الأولوية على القص)
 };
 const _iniCache = {};   // src → {top,botR,botL, w}
 function _loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
@@ -1880,13 +1881,15 @@ function initiativeHTML(){
     </div>
   </div><span class="ini-q" id="iniQ" hidden></span></article>`;
 }
-async function fillInitiative(srcs, eyeSrc){
+async function fillInitiative(srcs, eyeSrc, slots){
+  slots = slots || {};
   // أعلى دقة متاحة: نجرب كل المصادر ونأخذ الأعرض
   let best=null;
   for(const src of srcs){ try{ const c=await cropInitiative(src); if(!best || c.w>best.w) best=c; }catch(e){ console.warn('ini',e); } }
-  const card=document.getElementById('iniCard'); if(!card || !best) return;
+  const card=document.getElementById('iniCard'); if(!card) return;
+  best = best || {};
   card.querySelectorAll('.ph').forEach(b=>{
-    const u = b.dataset.k==='eye' ? eyeSrc : best[b.dataset.k];
+    const u = b.dataset.k==='eye' ? eyeSrc : (slots[b.dataset.k] || best[b.dataset.k]);
     if(!u){ b.hidden=true; return; }
     b.hidden=false; b.dataset.src=u; b.querySelector('img').src=u;
   });
@@ -1912,8 +1915,10 @@ function renderServices(){
   // صور تصميم المبادرة: نسخة الإكسل + أي صورة مرفوعة باسم المبادرة → تُعرض داخل البطاقة بدل تكرارها في المعرض
   const iniSrcs = photos.filter(p=>p.excel || (INITIATIVE.match.test(p.name||'') && !INITIATIVE.eyeMatch.test(p.name||''))).map(p=>p.src);
   const eyeP = photos.find(p=>!p.excel && INITIATIVE.eyeMatch.test(p.name||''));
-  const iniIds = photos.filter(p=>!p.excel && (INITIATIVE.match.test(p.name||'') || p===eyeP)).map(p=>p.id);
-  if(iniSrcs.length) photos = photos.filter(p=>!(p.excel || INITIATIVE.match.test(p.name||'') || p===eyeP));
+  const slotPs = {}; for(const [k,re] of Object.entries(INITIATIVE.slotMatch)){ const f=photos.find(p=>!p.excel && p!==eyeP && re.test(p.name||'')); if(f) slotPs[k]=f; }
+  const slotList = Object.values(slotPs);
+  const iniIds = photos.filter(p=>!p.excel && (INITIATIVE.match.test(p.name||'') || p===eyeP || slotList.includes(p))).map(p=>p.id);
+  if(iniSrcs.length) photos = photos.filter(p=>!(p.excel || INITIATIVE.match.test(p.name||'') || p===eyeP || slotList.includes(p)));
   const videos = up.filter(m=>/^video\//.test(m.type));
   const notes = SERVICES.filter(s=>!s.images.length && s.texts.length);
   const del = id => id ? `<button type="button" class="svc-del" data-del="${esc(id)}" title="حذف" aria-label="حذف">${trash}</button>` : '';
@@ -1939,7 +1944,7 @@ function renderServices(){
     </section>`;
   }
   box.innerHTML = html;
-  if(iniSrcs.length){ fillInitiative(iniSrcs, eyeP && eyeP.src); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
+  if(iniSrcs.length){ fillInitiative(iniSrcs, eyeP && eyeP.src, Object.fromEntries(Object.entries(slotPs).map(([k,p])=>[k,p.src]))); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
   document.getElementById('servicesEmpty').style.display = html ? 'none' : '';
   const last = SERVICE_MEDIA.length ? SERVICE_MEDIA[SERVICE_MEDIA.length-1].addedAt : null;
   document.getElementById('svcChips').innerHTML = html ? [
