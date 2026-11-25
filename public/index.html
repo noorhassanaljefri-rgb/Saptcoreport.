@@ -304,14 +304,16 @@
   .ini-brand b{display:block; font-size:1.042cqw; font-weight:700; line-height:1.5;}
   .ini-brand small{display:block; font-size:.677cqw; font-weight:700; letter-spacing:.156cqw; color:var(--gt); margin-top:.1cqw;}
   .ini-head{display:flex; flex-direction:column; gap:.208cqw;}
-  .ini h2{margin:0; font-size:2.917cqw; font-weight:800; line-height:1.35;}
+  .ini h2{margin:0; font-size:2.396cqw; font-weight:800; line-height:1.35; white-space:nowrap;}
   .ini-en{margin:0; font-size:1.667cqw; font-weight:700; line-height:1.2; color:var(--gt); letter-spacing:-.016cqw;}
   .ini-dash{display:flex; gap:.3125cqw; margin-top:1.042cqw;} .ini-dash span{width:5cqw; height:.26cqw; background:var(--g);} .ini-dash span:last-child{width:1.042cqw; background:var(--ink);}
-  .ini-collab{display:flex; align-items:center; gap:.9375cqw;}
+  .ini-collabs{display:flex; flex-direction:column; gap:.729cqw;}
+  .ini-collab{display:flex; align-items:center; gap:.833cqw;}
+  .ini-collab .ini-box{width:2.917cqw; height:2.917cqw;}
   .ini-box{flex-shrink:0; box-sizing:border-box; width:3.333cqw; height:3.333cqw; border:max(1px,.078cqw) solid var(--g); display:flex; align-items:center; justify-content:center;}
   .ini-box svg{width:53%; height:53%;}
-  .ini-collab b{display:block; font-size:1.25cqw; font-weight:700; line-height:1.5;}
-  .ini-collab small{display:block; font-size:.885cqw; font-weight:500; color:var(--mut); margin-top:.1cqw;}
+  .ini-collab b{display:block; font-size:1.094cqw; font-weight:700; line-height:1.6;}
+  .ini-collab small{display:block; font-size:.781cqw; font-weight:500; color:var(--mut);}
   .ini-desc{border-right:max(2px,.156cqw) solid var(--g); padding-right:1.146cqw; display:flex; flex-direction:column; gap:.52cqw;}
   .ini-desc p{margin:0; font-size:1.094cqw; font-weight:500; line-height:1.85;}
   .ini-desc small{display:block; font-size:.833cqw; font-weight:500; line-height:1.5; color:var(--mut);}
@@ -324,20 +326,20 @@
   .ini-obj b{font-size:.99cqw; font-weight:700; line-height:1.6;}
   .ini-obj small{display:block; align-self:stretch; font-size:.729cqw; font-weight:500; line-height:1.4; color:var(--mut);}
   .ini-photos{width:47.917cqw; flex-shrink:0; display:flex; flex-direction:column; justify-content:center; gap:.625cqw;}
-  .ini-photos .row{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.625cqw;}
   .ini-photos .ph{position:relative; padding:0; border:0; background:#eceef1; cursor:zoom-in; overflow:hidden; display:block; width:100%;}
-  .ini-photos .ph.top{aspect-ratio:920/449;} .ini-photos .ph.bot{aspect-ratio:454/400;}
+  .ini-photos .ph.top{aspect-ratio:920/290;} .ini-photos .ph.strip{aspect-ratio:920/205;} .ini-photos .ph[hidden]{display:none;}
   .ini-photos img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .ini-photos .ph.top img{object-position:center 30%;} .ini-photos [data-k=botR] img{object-position:center 55%;} .ini-photos [data-k=botL] img{object-position:center 45%;} .ini-photos [data-k=eye] img{object-position:center 40%;}
   .ini-photos img:not([src]){visibility:hidden;}
   .ini-line{width:7.29cqw; height:.26cqw; background:var(--g); margin-top:.208cqw;}
   .ini-q{position:absolute; bottom:10px; left:12px; font-size:11.5px; color:#8a6420; background:rgba(255,255,255,.94); border:1px solid #ead9a6; padding:4px 10px; border-radius:20px; font-family:'IBM Plex Sans Arabic',sans-serif;}
   @container (max-width:760px){
     .ini-in{flex-direction:column; height:auto; padding:18px 16px 20px; gap:22px;}
-    .ini-photos{order:-1; width:100%; gap:6px;} .ini-photos .row{gap:6px;} .ini-line{width:64px; height:4px;}
+    .ini-photos{order:-1; width:100%; gap:6px;} .ini h2{white-space:normal;} .ini-collabs{gap:12px;} .ini-line{width:64px; height:4px;}
     .ini-text{gap:20px;}
     .ini-brand{gap:12px;} .ini-brand img{height:32px;} .ini-brand i{height:30px;} .ini-brand b{font-size:14px;} .ini-brand small{font-size:9px; letter-spacing:2px;}
     .ini h2{font-size:27px;} .ini-en{font-size:16px;} .ini-dash{margin-top:10px; gap:5px;} .ini-dash span{width:60px; height:4px;} .ini-dash span:last-child{width:14px;}
-    .ini-collab{gap:12px;} .ini-box{width:44px; height:44px; border-width:1.5px;} .ini-collab b{font-size:16px;} .ini-collab small{font-size:12px;}
+    .ini-collab{gap:12px;} .ini-box, .ini-collab .ini-box{width:44px; height:44px; border-width:1.5px;} .ini-collab b{font-size:15px;} .ini-collab small{font-size:12px;}
     .ini-desc{border-right-width:3px; padding-right:12px; gap:8px;} .ini-desc p{font-size:15px;} .ini-desc small{font-size:12px;}
     .ini-objh{gap:10px; margin-bottom:10px;} .ini-objh b{font-size:13px; padding:4px 12px;} .ini-objh small{font-size:9px; letter-spacing:2px;}
     .ini-objs{grid-template-columns:1fr 1fr;} .ini-obj{padding:14px 10px 10px; gap:8px;} .ini-obj:nth-child(2){border-left:0;} .ini-obj:nth-child(n+3){border-top:1px solid #e6e6e6;} .ini-obj:nth-child(3){border-left:1px solid #D6D6D6;}
@@ -1826,8 +1828,9 @@ function renderTicketsDetail(){
 const INITIATIVE = {
   title:'مبادرة الرعاية الصحية للموظفين', en:'Employee Health & Wellness Initiative',
   collab:'بالتعاون مع عيادات أندلسية', collabEn:'In collaboration with Andalusia Clinics',
-  desc:'نُظِّمت مبادرة صحية للموظفين شملت الفحوصات الطبية، وفحص الأسنان، والتحاليل المخبرية؛ بهدف تعزيز صحة الموظفين ودعم الوقاية المبكرة.',
-  descEn:'A health initiative was organized for employees, including medical screenings, dental checkups and laboratory tests, to promote employee wellbeing and preventive care.',
+  eye:'مبادرة فحص النظر بالتعاون مع رؤى ملونة للنظارات', eyeEn:'Eye Examination Initiative with Roa’a Molawanah Optical',
+  desc:'نُظِّمت مبادرة صحية للموظفين شملت الفحوصات الطبية، وفحص الأسنان، وفحص النظر، والتحاليل المخبرية؛ بهدف تعزيز صحة الموظفين ودعم الوقاية المبكرة.',
+  descEn:'A health initiative was organized for employees, including medical screenings, dental checkups, eye examinations and laboratory tests, to promote employee wellbeing and preventive care.',
   objectives:[
     {icon:'<path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>', t:'دعم الوقاية والكشف المبكر', en:'Support early detection & prevention'},
     {icon:'<path d="M2 12h4l2.5-6 4 12 2.5-6H22"/>', t:'رفع مستوى الوعي الصحي', en:'Raise health awareness'},
@@ -1837,6 +1840,7 @@ const INITIATIVE = {
   // مواضع الصور داخل التصميم الأصلي (نِسَب ثابتة من عرض/ارتفاع الصورة) — أعلى، أسفل يمين، أسفل يسار
   crops:{top:[144/3840,206/2160,1984/3840,1104/2160], botR:[1076/3840,1128/2160,1984/3840,1928/2160], botL:[144/3840,1128/2160,1052/3840,1928/2160]},
   match:/مبادر|initiative|رعاية|health/i,
+  eyeMatch:/نظر|عيون|eye|optic|رؤى|رؤية/i,   // صورة فحص النظر تُرفع من زر «إضافة صورة أو فيديو» باسم فيه «النظر»
 };
 const _iniCache = {};   // src → {top,botR,botL, w}
 function _loadImg(src){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=src; }); }
@@ -1859,27 +1863,33 @@ function initiativeHTML(){
     <div class="ini-text">
       <div class="ini-brand">${logo?`<img src="${logo}" alt="سابتكو SAPTCO">`:''}<i></i><div><b>حافلات جدة</b><small class="lat">JEDDAH BUSES</small></div></div>
       <div class="ini-head"><h2>${esc(I.title)}</h2><p class="ini-en lat">${esc(I.en)}</p><div class="ini-dash"><span></span><span></span></div></div>
-      <div class="ini-collab">${box('<path d="M12 20.5S3 15 3 8.8A4.8 4.8 0 0 1 12 6.5a4.8 4.8 0 0 1 9 2.3C21 15 12 20.5 12 20.5z"/><path d="M5 12h4l1.5-2.5 2 4.5 1.5-2H19"/>')}<div><b>${esc(I.collab)}</b><small class="lat">${esc(I.collabEn)}</small></div></div>
+      <div class="ini-collabs">
+        <div class="ini-collab">${box('<path d="M12 20.5S3 15 3 8.8A4.8 4.8 0 0 1 12 6.5a4.8 4.8 0 0 1 9 2.3C21 15 12 20.5 12 20.5z"/><path d="M5 12h4l1.5-2.5 2 4.5 1.5-2H19"/>')}<div><b>${esc(I.collab)}</b><small class="lat">${esc(I.collabEn)}</small></div></div>
+        <div class="ini-collab">${box('<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>')}<div><b>${esc(I.eye)}</b><small class="lat">${esc(I.eyeEn)}</small></div></div>
+      </div>
       <div class="ini-desc"><p>${esc(I.desc)}</p><small class="lat">${esc(I.descEn)}</small></div>
       <div><div class="ini-objh"><b>أهداف المبادرة</b><small class="lat">INITIATIVE OBJECTIVES</small></div>
       <div class="ini-objs">${I.objectives.map(o=>`<div class="ini-obj">${box(o.icon)}<b>${esc(o.t)}</b><small class="lat">${esc(o.en)}</small></div>`).join('')}</div></div>
     </div>
     <div class="ini-photos">
-      <button type="button" class="ph top svc-img" data-k="top" aria-label="تكبير الصورة"><img alt="فريق المبادرة مع عيادات أندلسية"></button>
-      <div class="row">
-        <button type="button" class="ph bot svc-img" data-k="botR" aria-label="تكبير الصورة"><img alt="فحص الأسنان"></button>
-        <button type="button" class="ph bot svc-img" data-k="botL" aria-label="تكبير الصورة"><img alt="التحاليل المخبرية"></button>
-      </div>
+      <button type="button" class="ph top svc-img" data-k="top" aria-label="تكبير الصورة"><img alt="فريق المبادرة"></button>
+      <button type="button" class="ph strip svc-img" data-k="botR" aria-label="تكبير الصورة"><img alt="فحص الأسنان"></button>
+      <button type="button" class="ph strip svc-img" data-k="botL" aria-label="تكبير الصورة"><img alt="التحاليل المخبرية"></button>
+      <button type="button" class="ph strip svc-img" data-k="eye" aria-label="تكبير الصورة" hidden><img alt="فحص النظر"></button>
       <span class="ini-line"></span>
     </div>
   </div><span class="ini-q" id="iniQ" hidden></span></article>`;
 }
-async function fillInitiative(srcs){
+async function fillInitiative(srcs, eyeSrc){
   // أعلى دقة متاحة: نجرب كل المصادر ونأخذ الأعرض
   let best=null;
   for(const src of srcs){ try{ const c=await cropInitiative(src); if(!best || c.w>best.w) best=c; }catch(e){ console.warn('ini',e); } }
   const card=document.getElementById('iniCard'); if(!card || !best) return;
-  card.querySelectorAll('.ph').forEach(b=>{ const u=best[b.dataset.k]; b.dataset.src=u; b.querySelector('img').src=u; });
+  card.querySelectorAll('.ph').forEach(b=>{
+    const u = b.dataset.k==='eye' ? eyeSrc : best[b.dataset.k];
+    if(!u){ b.hidden=true; return; }
+    b.hidden=false; b.dataset.src=u; b.querySelector('img').src=u;
+  });
   const q=document.getElementById('iniQ');
   q.hidden=true;
 }
@@ -1900,9 +1910,10 @@ function renderServices(){
     ...SERVICES.flatMap(s=>s.images.map(src=>({src, cap:s.texts.map(t=>t.v).join(' — '), excel:true})))
   ];
   // صور تصميم المبادرة: نسخة الإكسل + أي صورة مرفوعة باسم المبادرة → تُعرض داخل البطاقة بدل تكرارها في المعرض
-  const iniSrcs = photos.filter(p=>p.excel || INITIATIVE.match.test(p.name||'')).map(p=>p.src);
-  const iniIds = photos.filter(p=>!p.excel && INITIATIVE.match.test(p.name||'')).map(p=>p.id);
-  if(iniSrcs.length) photos = photos.filter(p=>!(p.excel || INITIATIVE.match.test(p.name||'')));
+  const iniSrcs = photos.filter(p=>p.excel || (INITIATIVE.match.test(p.name||'') && !INITIATIVE.eyeMatch.test(p.name||''))).map(p=>p.src);
+  const eyeP = photos.find(p=>!p.excel && INITIATIVE.eyeMatch.test(p.name||''));
+  const iniIds = photos.filter(p=>!p.excel && (INITIATIVE.match.test(p.name||'') || p===eyeP)).map(p=>p.id);
+  if(iniSrcs.length) photos = photos.filter(p=>!(p.excel || INITIATIVE.match.test(p.name||'') || p===eyeP));
   const videos = up.filter(m=>/^video\//.test(m.type));
   const notes = SERVICES.filter(s=>!s.images.length && s.texts.length);
   const del = id => id ? `<button type="button" class="svc-del" data-del="${esc(id)}" title="حذف" aria-label="حذف">${trash}</button>` : '';
@@ -1928,11 +1939,11 @@ function renderServices(){
     </section>`;
   }
   box.innerHTML = html;
-  if(iniSrcs.length){ fillInitiative(iniSrcs); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
+  if(iniSrcs.length){ fillInitiative(iniSrcs, eyeP && eyeP.src); if(iniIds.length){ const c=document.getElementById('iniCard'); c.insertAdjacentHTML('afterbegin', iniIds.map(id=>del(id)).join('')); } }
   document.getElementById('servicesEmpty').style.display = html ? 'none' : '';
   const last = SERVICE_MEDIA.length ? SERVICE_MEDIA[SERVICE_MEDIA.length-1].addedAt : null;
   document.getElementById('svcChips').innerHTML = html ? [
-    `<span class="svc-chip">${IC_IMG}<b>${photos.length + (iniSrcs.length?3:0)}</b> صورة</span>`,
+    `<span class="svc-chip">${IC_IMG}<b>${photos.length + (iniSrcs.length?(eyeP?4:3):0)}</b> صورة</span>`,
     `<span class="svc-chip">${IC_VID}<b>${videos.length}</b> فيديو</span>`,
     last ? `<span class="svc-chip">${IC_CAL}آخر إضافة: <b>${fmtD(last)}</b></span>` : ''
   ].join('') : '';
